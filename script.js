@@ -1,3 +1,29 @@
+(function () {
+})()
+
+    console.log("here")
+
+    
+
+
+
+
+
+
+    
+    
+    
+
+    
+
+
+
+// https://plotly.com/javascript
+// https://plotly.com/javascript/range-slider/
+
+
+
+
 
 
 var trace1 = {
@@ -29,6 +55,8 @@ var trace1 = {
   
   Plotly.newPlot('myDiv', data, layout);
   
+
+
 
 
 
@@ -100,4 +128,3 @@ var trace1 = {
           y: y
       }];
   }
-
