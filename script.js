@@ -1,20 +1,9 @@
-(function () {
-})()
+document.addEventListener("DOMContentLoaded", function() {
+    
+    (function() {
+      // Your code goes here
 
     console.log("here")
-
-    
-
-
-
-
-
-
-    
-    
-    
-
-    
 
 
 
@@ -128,3 +117,7 @@ var trace1 = {
           y: y
       }];
   }
+
+
+})();
+});
