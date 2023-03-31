@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     baseUrl = "https://github.com/esixce/textDigest/blob/main/output/";
 
     // UNCOMMENT FOR WEB
-    fetch(baseUrl + "stemmed_tokens.csv")
+    fetch(baseUrl + "txtSpecs.csv")
       .then((response) => response.text())
       .then((data) => {
         // Use Papa Parse to parse the CSV data into an array of objects
