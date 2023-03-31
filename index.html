@@ -5,17 +5,21 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/d3-cloud"></script>
     <script src="https://cdn.plot.ly/plotly-1.8.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="script.js"></script>
+      
 </head>
 <body>
     <h2>Language Analysis</h2>
     <p>Language Analysis of conversation with ChatGPT Developed using python nltk</p>
 
+    <div id="word-cloud" ></div>
     <div id="graph" ></div>
     <div id="myDiv" ></div>
     <div id="tester" style="width:600px;height:250px;"></div>
-
 
     <script>    
         TESTER = document.getElementById('tester');
