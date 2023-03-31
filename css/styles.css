@@ -1,0 +1,28 @@
+body {
+    font-size: 16px;
+    color: #330084;
+    background-color: #d7edff;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+/** HEADER **/
+#header-nav {
+    background-color: #5f19f6;
+    border-radius: 0;
+    border: 0;
+  }
+  .navbar-brand {
+    padding-top: 25px;
+  }
+  .navbar-brand h1 { /* Restaurant name */
+    font-family: 'Roboto', sans-serif;
+    color: #d7edff;
+    font-size: 1.5em;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px #222;
+    margin-top: 0;
+    margin-bottom: 0;
+    line-height: .75;
+  }
+  

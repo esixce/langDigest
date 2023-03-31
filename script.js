@@ -1,24 +1,40 @@
 document.addEventListener("DOMContentLoaded", function () {
   (function () {
+    'use strict';
 
+    const myText = {};
     const freqTable = {};
 
-    fetch("input/txtSpecs.csv")
+    fetch("input/tokens.csv")
       .then((response) => response.text())
       .then((data) => {
         const parseData = Papa.parse(data, { header: true }).data;
         parseData.forEach(function (row) {
           freqTable[row.Token] = parseInt(row.Frequency);
         });
-        console.log(freqTable);
+        // console.log(freqTable);
         wordCloud(freqTable);
       })
       .catch((error) => {
         console.error(error);
       });
 
-    function wordCloud(freqTable) {
 
+      // total number of words
+      // total number of sentences
+      // total number of unique words
+      // total number of stemmed non-stop words
+
+      // graphs:
+      //    word cloud [swap source words / stemmed]
+      //    frequency dist [alphabetical, ascending count, appearance]
+
+
+      
+      myText.words = ''
+
+
+    function wordCloud(freqTable) {
       // Define the dimensions of the word cloud
       const width = 600;
       const height = 400;
@@ -199,3 +215,10 @@ document.addEventListener("DOMContentLoaded", function () {
 //     x: [1, 2, 3, 4, 5],
 //     y: [1, 2, 4, 8, 16] }], {
 //     margin: { t: 0 } } );
+
+
+//   const canvas = document.createElement("canvas");
+//   const ctx = canvas.getContext("2d");
+//   if ("willReadFrequently" in ctx) {
+//     ctx.willReadFrequently = true;
+//   }
