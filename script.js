@@ -1,46 +1,23 @@
 document.addEventListener("DOMContentLoaded", function () {
   (function () {
+
     const freqTable = {};
 
-    baseUrl = "https://github.com/esixce/textDigest/blob/main/output/";
-
-    // UNCOMMENT FOR WEB
-    fetch(baseUrl + "txtSpecs.csv")
+    fetch("input/txtSpecs.csv")
       .then((response) => response.text())
       .then((data) => {
-        // Use Papa Parse to parse the CSV data into an array of objects
-        const freqTable = Papa.parse(data, { header: true }).data;
-
-        // Do something with the parsed data, such as printing it to the console
+        const parseData = Papa.parse(data, { header: true }).data;
+        parseData.forEach(function (row) {
+          freqTable[row.Token] = parseInt(row.Frequency);
+        });
         console.log(freqTable);
         wordCloud(freqTable);
       })
       .catch((error) => {
-        // Handle any errors that occur during the fetch request
         console.error(error);
       });
 
-    // Papa.parse("/input/txtSpecs.csv", {
-    //   download: true,
-    //   header: true,
-    //   complete: function (results) {
-    //     results.data.forEach(function (row) {
-    //       freqTable[row.Token] = parseInt(row.Frequency);
-    //     });
-    //     wordCloud(freqTable)
-    //   },
-    // });
-
-
-
     function wordCloud(freqTable) {
-      const otherThing = {
-        apple: 10,
-        banana: 8,
-        orange: 6,
-        grape: 4,
-        pear: 2,
-      };
 
       // Define the dimensions of the word cloud
       const width = 600;
@@ -111,10 +88,6 @@ document.addEventListener("DOMContentLoaded", function () {
 //   .catch((error) => {
 //     console.error("Error fetching data:", error);
 //   });
-
-
-
-
 
 // var trace1 = {
 //     x: [1, 2, 3],
@@ -221,8 +194,6 @@ document.addEventListener("DOMContentLoaded", function () {
 //       },
 //     ];
 //   }
-
-
 
 // Plotly.newPlot( tester, [{
 //     x: [1, 2, 3, 4, 5],
