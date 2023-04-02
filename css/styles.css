@@ -1,26 +1,28 @@
+/* #0B2447, #19376D, #576CBC, #A5D7E8 */
+
 body {
     font-size: 16px;
-    color: #330084;
-    background-color: #d7edff;
+    color: #0B2447;
+    background-color: #F7F7F7;
     font-family: 'Roboto', sans-serif;
   }
   
 /** HEADER **/
 #header-nav {
-    background-color: #1f78b0;
+    background-color: #576CBC;
     border-radius: 0;
     border: 0;
   }
-  .navbar-brand {
+  /* .navbar-brand {
     padding-top: 25px;
-  }
+  } */
   .navbar-brand h1 { /* Restaurant name */
     font-family: 'Roboto', sans-serif;
-    color: #d7edff;
-    font-size: 1.5em;
+    color: #F7F7F7;
+    font-size: 1.4em;
     text-transform: uppercase;
     font-weight: bold;
-    text-shadow: 1px 1px 1px #222;
+    text-shadow: 1px 1px 1px #0B2447;
     margin-top: 0;
     margin-bottom: 0;
     line-height: .75;
@@ -29,22 +31,24 @@ body {
     text-decoration: none;
   }
   #nav-list a {
-    color: #d7edff;
+    color: #F7F7F7;
     text-align: center;
+    font-size: .8em;
+    padding: 5px;
   }
   #nav-list a:hover {
-    background: #330084;
+    background: #0B2447;
   }
   #nav-list a span {
-    font-size: 1.8em;
+    font-size: 1.2em;
   }
     
   .navbar-header button.navbar-toggle, .navbar-header .icon-bar {
-    border: 1px solid #330084;
+    border: 1px solid #0B2447;
   }
   .navbar-header button.navbar-toggle {
     clear: both;
-    margin-top: -30px;
+    margin-top: -22px;
   }
   /* END HEADER */
   
@@ -53,7 +57,7 @@ body {
     margin-top: 30px;
     padding-top: 35px;
     padding-bottom: 30px;
-    background-color: #1f78b0;
+    background-color: #A5D7E8;
     border-top: 0;
   }
   .panel-footer div.row {
@@ -66,12 +70,12 @@ body {
 @media (max-width: 767px) {
   /* Header */
   .navbar-brand {
-    padding-top: 10px;
-    height: 80px;
+    padding-top: 5px;
+    height: 30px;
   }
   .navbar-brand h1 { /* Restaurant name */
     padding-top: 10px;
-    font-size: 5vw; /* 1vw = 1% of viewport width */
+    font-size: 4vw; /* 1vw = 1% of viewport width */
   }
 
   #collapsable-nav a { /* Collapsed nav menu text */
