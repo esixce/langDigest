@@ -150,9 +150,11 @@ $(function () {
 
   function createChart(data) {
     var margin = { top: 20, right: 30, bottom: 30, left: 40 },
-      width = 960 - margin.left - margin.right,
-      height = 500 - margin.top - margin.bottom;
-
+      // width = 960 - margin.left - margin.right,
+      height = 300 - margin.top - margin.bottom;
+      const container = document.getElementById("word-cloud");
+      const width = container.clientWidth;
+  
     var svg = d3
       .select("#chart")
       .append("svg")
@@ -200,7 +202,12 @@ $(function () {
     svg
       .append("g")
       .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x));
+      .call(d3.axisBottom(x))
+      .selectAll("text")
+      .attr("transform", "rotate(-90)")
+      .attr("dx", "-1.5em")
+      .attr("dy", "-0.5em")
+      .style("text-anchor", "end");
 
     // add y-axis
     svg.append("g").call(d3.axisLeft(y));
@@ -208,8 +215,11 @@ $(function () {
 
   function wordCloud(freqTable) {
     // Define the dimensions of the word cloud
-    const width = 600;
+    // const width = 600;
     const height = 400;
+    const container = document.getElementById("word-cloud");
+    const width = container.clientWidth;
+    // const height = container.clientHeight;
 
     // Define the word cloud layout
     const layout = d3.layout
