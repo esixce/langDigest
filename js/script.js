@@ -56,13 +56,11 @@ $(function () {
 
   // Load the menu categories view
   dc.loadText = function () {
-    showLoading("#main-content");
     buildAndShowTextHTML();
   };
 
   // Load the menu categories view
   dc.loadAbout = function () {
-    showLoading("#main-content");
     buildAndShowAboutHTML();
   };
 
@@ -253,7 +251,7 @@ $(function () {
   }
 
   global.$dc = dc;
-  
+
 })(window);
 // });
 
