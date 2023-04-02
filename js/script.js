@@ -206,7 +206,7 @@ $(function () {
   function wordCloud(freqTable) {
     // Define the dimensions of the word cloud
     // const width = 600;
-    const height = 400;
+    const height = 300;
     const container = document.getElementById("word-cloud");
     const width = container.clientWidth;
     // const height = container.clientHeight;
