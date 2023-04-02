@@ -6,13 +6,37 @@ $(function () {
     }
   });
 });
+// total number of words
+// total number of sentences
+// total number of unique words
+// total number of stemmed non-stop words
+
+// graphs:
+//    word cloud [swap source words / stemmed]
+//    frequency dist [alphabetical, ascending count, appearance]
+//    interactive scatter plot
 
 (function (global) {
   var dc = {};
 
   var dashboardHtmlUrl = "snippets/dashboard.html";
+  var paramHtmlUrl = "snippets/param-snippet.html";
   var textHtmlUrl = "snippets/text-snippet.html";
   var aboutHtmlUrl = "snippets/about-snippet.html";
+
+  let csvData;
+  const freqTable = {};
+  const myText = {};
+  myText.words = "";
+
+  fetch("input/tokens.csv")
+    .then((response) => response.text())
+    .then((data) => {
+      csvData = Papa.parse(data, { header: true }).data;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 
   // Convenience function for inserting innerHTML for 'select'
   var insertHtml = function (selector, html) {
@@ -38,6 +62,7 @@ $(function () {
   dc.loadDashboard = function () {
     showLoading("#main-content");
     buildAndShowDashboardHTML();
+    buildAndShowParamsHTML();
   };
 
   // Load the menu categories view
@@ -49,16 +74,6 @@ $(function () {
   dc.loadAbout = function () {
     buildAndShowAboutHTML();
   };
-
-  document.addEventListener("DOMContentLoaded", function (event) {
-    // On first load, show home view
-    showLoading("#main-content");
-    buildAndShowDashboardHTML();
-    // $ajaxUtils.sendGetRequest(
-    //   allCategoriesUrl,
-    //   buildAndShowHomeHTML,
-    //   true); // Explicitly setting the flag to get JSON from server processed into an object literal
-  });
 
   function buildAndShowTextHTML() {
     // Load home snippet page
@@ -78,35 +93,27 @@ $(function () {
   }
 
   function buildAndShowDashboardHTML() {
-    // Load home snippet page
     $ajaxUtils.sendGetRequest(
       dashboardHtmlUrl,
       function (homeHtml) {
-        // var chosenCategoryShortName = chooseRandomCategory(categories).short_name
-        var newHtml = insertProperty(
-          homeHtml,
-          "title",
-          "Chat GPT Conversation"
-        );
-        insertHtml("#main-content", newHtml);
+        insertHtml("#main-content", homeHtml);
 
-        const freqTable = {};
-        fetch("input/tokens.csv")
-          .then((response) => response.text())
-          .then((data) => {
-            const parseData = Papa.parse(data, { header: true }).data;
-            parseData.forEach(function (row) {
-              freqTable[row.Token] = parseInt(row.Frequency);
-            });
-            // console.log(freqTable);
-            wordCloud(freqTable);
-            createChart(parseData);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        csvData.forEach(function (row) {
+          freqTable[row.Token] = parseInt(row.Frequency);
+        });
+        // console.log(freqTable);
+        wordCloud(freqTable);
+        createChart(csvData);
+      },
+      false
+    ); // False here because we are getting just regular HTML from the server, so no need to process JSON.
+  }
 
-
+  function buildAndShowParamsHTML() {
+    $ajaxUtils.sendGetRequest(
+      paramHtmlUrl,
+      function (paramHtml) {
+        insertHtml("#param-content", paramHtml);
       },
       false
     ); // False here because we are getting just regular HTML from the server, so no need to process JSON.
@@ -129,18 +136,19 @@ $(function () {
     ); // False here because we are getting just regular HTML from the server, so no need to process JSON.
   }
 
-  const myText = {};
-
-  myText.words = "";
-
+  document.addEventListener("DOMContentLoaded", function (event) {
+    showLoading("#main-content");
+    buildAndShowParamsHTML();
+    buildAndShowDashboardHTML();
+  });
 
   function createChart(data) {
     var margin = { top: 20, right: 30, bottom: 70, left: 20 },
       // width = 960 - margin.left - margin.right,
       height = 300 - margin.top - margin.bottom;
-      const container = document.getElementById("word-cloud");
-      const width = container.clientWidth;
-  
+    const container = document.getElementById("word-cloud");
+    const width = container.clientWidth;
+
     var svg = d3
       .select("#chart")
       .append("svg")
@@ -198,7 +206,7 @@ $(function () {
       .style("stroke", "#0B2447") // set the color of the tick marks
       .style("font-size", "10px") // set the font size of the labels
       .style("text-anchor", "end");
-   
+
     // add y-axis
     svg.append("g").call(d3.axisLeft(y));
   }
@@ -251,16 +259,4 @@ $(function () {
   }
 
   global.$dc = dc;
-
 })(window);
-
-  // total number of words
-  // total number of sentences
-  // total number of unique words
-  // total number of stemmed non-stop words
-
-  // graphs:
-  //    word cloud [swap source words / stemmed]
-  //    frequency dist [alphabetical, ascending count, appearance]
-  //    interactive scatter plot
-
