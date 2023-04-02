@@ -240,7 +240,7 @@ $(function () {
         .append("text")
         .style("font-size", (d) => `${d.size}px`)
         .style("font-family", "Arial")
-        .style("fill", "steelblue")
+        .style("fill", "#576CBC")
         .attr("text-anchor", "middle")
         .attr(
           "transform",

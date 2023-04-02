@@ -31,13 +31,13 @@ body {
     text-decoration: none;
   }
   #nav-list a {
-    color: #F7F7F7;
+    color: #0B2447;
     text-align: center;
     font-size: .8em;
     padding: 5px;
   }
   #nav-list a:hover {
-    background: #0B2447;
+    background: #F7F7F7;
   }
   #nav-list a span {
     font-size: 1.2em;
