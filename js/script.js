@@ -1,17 +1,4 @@
-  // total number of words
-  // total number of sentences
-  // total number of unique words
-  // total number of stemmed non-stop words
-
-  // graphs:
-  //    word cloud [swap source words / stemmed]
-  //    frequency dist [alphabetical, ascending count, appearance]
-  //    interactive scatter plot
-
-
-// Same as document.addEventListener("DOMContentLoaded"...
 $(function () {
-  // Same as document.querySelector("#navbarToggle").addEventListener("blur",...
   $("#navbarToggle").blur(function (event) {
     var screenWidth = window.innerWidth;
     if (screenWidth < 768) {
@@ -20,7 +7,6 @@ $(function () {
   });
 });
 
-// document.addEventListener("DOMContentLoaded", function () {
 (function (global) {
   var dc = {};
 
@@ -149,7 +135,7 @@ $(function () {
 
 
   function createChart(data) {
-    var margin = { top: 20, right: 30, bottom: 30, left: 40 },
+    var margin = { top: 20, right: 30, bottom: 70, left: 20 },
       // width = 960 - margin.left - margin.right,
       height = 300 - margin.top - margin.bottom;
       const container = document.getElementById("word-cloud");
@@ -194,6 +180,7 @@ $(function () {
       .attr("y", function (d) {
         return y(d.Frequency);
       })
+      .attr("fill", "#576CBC") // set the bars to blue
       .attr("height", function (d) {
         return height - y(d.Frequency);
       });
@@ -207,8 +194,11 @@ $(function () {
       .attr("transform", "rotate(-90)")
       .attr("dx", "-1.5em")
       .attr("dy", "-0.5em")
+      .style("fill", "#0B2447") // set the color of the labels
+      .style("stroke", "#0B2447") // set the color of the tick marks
+      .style("font-size", "10px") // set the font size of the labels
       .style("text-anchor", "end");
-
+   
     // add y-axis
     svg.append("g").call(d3.axisLeft(y));
   }
@@ -263,56 +253,14 @@ $(function () {
   global.$dc = dc;
 
 })(window);
-// });
 
-//   function createChart(data) {
-//     var margin = {top: 20, right: 30, bottom: 30, left: 40},
-//         width = 960 - margin.left - margin.right,
-//         height = 500 - margin.top - margin.bottom;
+  // total number of words
+  // total number of sentences
+  // total number of unique words
+  // total number of stemmed non-stop words
 
-//     var svg = d3.select("#chart").append("svg")
-//         .attr("width", width + margin.left + margin.right)
-//         .attr("height", height + margin.top + margin.bottom)
-//       .append("g")
-//         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  // graphs:
+  //    word cloud [swap source words / stemmed]
+  //    frequency dist [alphabetical, ascending count, appearance]
+  //    interactive scatter plot
 
-//     // create x scale
-//     var x = d3.scaleBand()
-//         .range([0, width])
-//         .padding(0.1);
-//     x.domain(data.map(function(d) { return d.Token; }));
-
-//     // create y scale
-//     var y = d3.scaleLinear()
-//         .range([height, 0]);
-//     y.domain([0, d3.max(data, function(d) { return d.Frequency; })]);
-
-//     // create bars
-//     svg.selectAll(".bar")
-//         .data(data)
-//       .enter().append("rect")
-//         .attr("class", "bar")
-//         .attr("x", function(d) { return x(d.Token); })
-//         .attr("width", x.bandwidth())
-//         .attr("y", function(d) { return y(d.Frequency); })
-//         .attr("height", function(d) { return height - y(d.Frequency); });
-
-//     // add x-axis
-//     svg.append("g")
-//         .attr("transform", "translate(0," + height + ")")
-//         .call(d3.axisBottom(x));
-
-//     // add y-axis
-//     svg.append("g")
-//         .call(d3.axisLeft(y));
-//   }
-
-//   d3.select("#update").on("click", function () {
-//     var newData = [
-//       { Token: "apple", Frequency: 5 },
-//       { Token: "banana", Frequency: 15 },
-//       { Token: "cherry", Frequency: 25 },
-//       { Token: "date", Frequency: 20 },
-//     ];
-//     createChart(newData);
-//   });
