@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "firebase": "^9.19.1"
+    "firebase": "^9.19.1",
+    "plotly.js": "^2.20.0"
   }
 }

@@ -9,8 +9,10 @@
     <link rel="stylesheet" href="css/styles.css" />
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="https://unpkg.com/d3-cloud"></script>
-    <script src="https://cdn.plot.ly/plotly-1.8.0.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+    
     <script src="js/jquery-2.1.4.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/ajax-utils.js"></script>
@@ -40,11 +42,11 @@
                 <a href="index.html">
                   <span class="glyphicon glyphicon-home"></span> Dashboard</a>
               </li>
-              <!--li id="navMenuButton">
+              <li id="navMenuButton">
                 <a href="#" onclick="$dc.loadDashboard();">
                   <span class="glyphicon glyphicon-cutlery"></span>
                   <br class="hidden-xs" /> Dash</a>
-              </li-->
+              </li>
               <li>
                 <a href="#" onclick="$dc.loadText();">
                     <span class="glyphicon glyphicon-certificate"></span>
@@ -60,7 +62,6 @@
         </div>
       </nav>
     </header>
-    <div id="param-content" class="container"></div>
     <div id="main-content" class="container"></div>
 
     <footer class="panel-footer">

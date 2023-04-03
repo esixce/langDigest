@@ -24,15 +24,26 @@ $(function () {
   var textHtmlUrl = "snippets/text-snippet.html";
   var aboutHtmlUrl = "snippets/about-snippet.html";
 
-  let csvData;
+  let csvFiltered;
+  let csvTokens;
   const freqTable = {};
   const myText = {};
   myText.words = "";
+  const tokenList = [];
 
-  fetch("input/tokens.csv")
+  fetch("input/tokensFiltered.csv")
     .then((response) => response.text())
     .then((data) => {
-      csvData = Papa.parse(data, { header: true }).data;
+      csvFiltered = Papa.parse(data, { header: true }).data;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  fetch("input/tokensClean.csv")
+    .then((response) => response.text())
+    .then((data) => {
+      csvTokens = Papa.parse(data, { header: true }).data;
     })
     .catch((error) => {
       console.error(error);
@@ -62,7 +73,6 @@ $(function () {
   dc.loadDashboard = function () {
     showLoading("#main-content");
     buildAndShowDashboardHTML();
-    buildAndShowParamsHTML();
   };
 
   // Load the menu categories view
@@ -79,14 +89,13 @@ $(function () {
     // Load home snippet page
     $ajaxUtils.sendGetRequest(
       textHtmlUrl,
-      function (homeHtml) {
-        // var chosenCategoryShortName = chooseRandomCategory(categories).short_name
-        var newHtml = insertProperty(
-          homeHtml,
+      function (textHtml) {
+        var textHtml = insertProperty(
+          textHtml,
           "title",
           "Chat GPT Conversation"
         );
-        insertHtml("#main-content", newHtml);
+        insertHtml("#main-content", textHtml);
       },
       false
     ); // False here because we are getting just regular HTML from the server, so no need to process JSON.
@@ -96,41 +105,34 @@ $(function () {
     $ajaxUtils.sendGetRequest(
       dashboardHtmlUrl,
       function (homeHtml) {
-        insertHtml("#main-content", homeHtml);
+        $ajaxUtils.sendGetRequest(
+          paramHtmlUrl,
+          function (paramsHtml) {
+            insertHtml("#main-content", paramsHtml + homeHtml);
 
-        csvData.forEach(function (row) {
-          freqTable[row.Token] = parseInt(row.Frequency);
-        });
-        // console.log(freqTable);
-        wordCloud(freqTable);
-        createChart(csvData);
+            csvTokens.forEach(function (row) {
+              freqTable[row.Token] = parseInt(row.Frequency);
+              tokenList.push(row.Token);
+            });
+            // console.log(freqTable);
+            wordCloud();
+            barChart();
+            sentiment();
+            testDiv();
+          },
+          false
+        );
       },
       false
-    ); // False here because we are getting just regular HTML from the server, so no need to process JSON.
-  }
-
-  function buildAndShowParamsHTML() {
-    $ajaxUtils.sendGetRequest(
-      paramHtmlUrl,
-      function (paramHtml) {
-        insertHtml("#param-content", paramHtml);
-      },
-      false
-    ); // False here because we are getting just regular HTML from the server, so no need to process JSON.
+    );
   }
 
   function buildAndShowAboutHTML() {
     // Load home snippet page
     $ajaxUtils.sendGetRequest(
       aboutHtmlUrl,
-      function (homeHtml) {
-        // var chosenCategoryShortName = chooseRandomCategory(categories).short_name
-        var newHtml = insertProperty(
-          homeHtml,
-          "title",
-          "Chat GPT Conversation"
-        );
-        insertHtml("#main-content", newHtml);
+      function (aboutHtml) {
+        insertHtml("#main-content", aboutHtml);
       },
       false
     ); // False here because we are getting just regular HTML from the server, so no need to process JSON.
@@ -138,19 +140,18 @@ $(function () {
 
   document.addEventListener("DOMContentLoaded", function (event) {
     showLoading("#main-content");
-    buildAndShowParamsHTML();
     buildAndShowDashboardHTML();
   });
 
-  function createChart(data) {
+  function barChart() {
     var margin = { top: 20, right: 30, bottom: 70, left: 20 },
       // width = 960 - margin.left - margin.right,
       height = 300 - margin.top - margin.bottom;
-    const container = document.getElementById("word-cloud");
+    const container = document.getElementById("bar-chart");
     const width = container.clientWidth;
 
     var svg = d3
-      .select("#chart")
+      .select("#bar-chart")
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
@@ -160,7 +161,7 @@ $(function () {
     // create x scale
     var x = d3.scaleBand().range([0, width]).padding(0.1);
     x.domain(
-      data.map(function (d) {
+      csvFiltered.map(function (d) {
         return d.Token;
       })
     );
@@ -169,7 +170,7 @@ $(function () {
     var y = d3.scaleLinear().range([height, 0]);
     y.domain([
       0,
-      d3.max(data, function (d) {
+      d3.max(csvFiltered, function (d) {
         return d.Frequency;
       }),
     ]);
@@ -177,7 +178,7 @@ $(function () {
     // create bars
     svg
       .selectAll(".bar")
-      .data(data)
+      .data(csvFiltered)
       .enter()
       .append("rect")
       .attr("class", "bar")
@@ -211,10 +212,10 @@ $(function () {
     svg.append("g").call(d3.axisLeft(y));
   }
 
-  function wordCloud(freqTable) {
+  function wordCloud() {
     // Define the dimensions of the word cloud
     // const width = 600;
-    const height = 300;
+    const height = 400;
     const container = document.getElementById("word-cloud");
     const width = container.clientWidth;
     // const height = container.clientHeight;
@@ -258,5 +259,65 @@ $(function () {
     }
   }
 
+  function sentiment() { 
+    // Sample data for text analysis
+    const data = [
+      { word: "happy", frequency: 10, sentiment: 0.8 },
+      { word: "sad", frequency: 5, sentiment: -0.6 },
+      { word: "angry", frequency: 8, sentiment: -0.4 },
+      { word: "love", frequency: 12, sentiment: 0.9 },
+      { word: "hate", frequency: 4, sentiment: -0.8 },
+    ];
+    
+    // Create a scatterplot of sentiment vs frequency
+    const margin = { top: 20, right: 30, bottom: 30, left: 40 };
+    const width = 600 - margin.left - margin.right;
+    const height = 400 - margin.top - margin.bottom;
+    
+    const svg = d3
+      .select("#sentiment")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+    
+    const x = d3.scaleLinear().domain([0, d3.max(data, (d) => d.frequency)]).range([0, width]);
+    const y = d3.scaleLinear().domain([-1, 1]).range([height, 0]);
+    
+    svg
+      .append("g")
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(x));
+    
+    svg.append("g").call(d3.axisLeft(y));
+    
+    svg
+      .selectAll("dot")
+      .data(data)
+      .enter()
+      .append("circle")
+      .attr("cx", (d) => x(d.frequency))
+      .attr("cy", (d) => y(d.sentiment))
+      .attr("r", 5)
+      .style("fill", "blue");
+    
+    svg
+      .selectAll("text")
+      .data(data)
+      .enter()
+      .append("text")
+      .attr("x", (d) => x(d.frequency) + 10)
+      .attr("y", (d) => y(d.sentiment))
+      .text((d) => d.word)
+      .style("font-size", "12px");
+        
+  }
+  
+  function testDiv() { //test-div
+  }
+  
+
   global.$dc = dc;
 })(window);
+
