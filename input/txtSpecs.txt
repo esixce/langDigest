@@ -1,0 +1,1 @@
+{"totalTokens": 1600, "totalTokensClean": 1463, "totalTokensUnique": 463, "totalTokensHapaxes": 271, "totalFilteredStemmed": 803, "totalFilteredStemmedUnique": 324, "totalFilteredStemmedHapaxes": 181, "totalSentences": 55, "sentiment": {"neg": 0.066, "neu": 0.832, "pos": 0.102, "compound": 0.9951}}

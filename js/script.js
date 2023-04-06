@@ -6,15 +6,6 @@ $(function () {
     }
   });
 });
-// total number of words
-// total number of sentences
-// total number of unique words
-// total number of stemmed non-stop words
-
-// graphs:
-//    word cloud [swap source words / stemmed]
-//    frequency dist [alphabetical, ascending count, appearance]
-//    interactive scatter plot
 
 (function (global) {
   var dc = {};
@@ -23,31 +14,198 @@ $(function () {
   var paramHtmlUrl = "snippets/param-snippet.html";
   var textHtmlUrl = "snippets/text-snippet.html";
   var aboutHtmlUrl = "snippets/about-snippet.html";
+  var dataHtmlUrl = "snippets/data-snippet.html";
 
-  let csvFiltered;
-  let csvTokens;
-  const freqTable = {};
-  const myText = {};
-  myText.words = "";
-  const tokenList = [];
+  let txt;
+  let txtSpecs;
+  let tokensFinal = [];
+  let tokensUnique = [];
+  let tokensHapaxes = [];
+  let tokensStemmedFinal = [];
+  let tokensStemmedUnique = [];
+  let tokensStemmedHapaxes = [];
+  let sentencesSentiment = [];
 
-  fetch("input/tokensFiltered.csv")
-    .then((response) => response.text())
-    .then((data) => {
-      csvFiltered = Papa.parse(data, { header: true }).data;
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  let selectedTokens;
 
-  fetch("input/tokensClean.csv")
-    .then((response) => response.text())
-    .then((data) => {
-      csvTokens = Papa.parse(data, { header: true }).data;
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  let chgTx = {
+    tokenset: false,
+    sorting: false,
+    filtering: false,
+    breakpoint: false,
+  };
+
+  (function () {
+    function gatherData() {
+      fetch("input/chatgpt.txt")
+        .then((response) => response.text())
+        .then((data) => {
+          txt = Papa.parse(data, { header: false }).data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      fetch("input/txtSpecs.txt")
+        .then((response) => response.json())
+        .then((data) => {
+          txtSpecs = data;
+        });
+
+      fetch("input/tokensFinal.csv")
+        .then((response) => response.text())
+        .then((data) => {
+          parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
+          parsedData.forEach(function (row) {
+            tokensFinal.push({
+              index: parseInt(row.index),
+              token: row.token,
+              count: parseInt(row.count),
+              tag: row.tag,
+              frequency: parseFloat(row.frequency),
+              neg: parseFloat(row.neg),
+              neu: parseFloat(row.neu),
+              pos: parseFloat(row.pos),
+              compound: parseFloat(row.compound),
+            });
+            tokensFinal.sort(function (a, b) { return a.index - b.index;});
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      fetch("input/tokensUnique.csv")
+        .then((response) => response.text())
+        .then((data) => {
+          parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
+          parsedData.forEach(function (row) {
+            tokensUnique.push({
+              index: parseInt(row.index),
+              token: row.token,
+              count: parseInt(row.count),
+              tag: row.tag,
+              frequency: parseFloat(row.frequency),
+              neg: parseFloat(row.neg),
+              neu: parseFloat(row.neu),
+              pos: parseFloat(row.pos),
+              compound: parseFloat(row.compound),
+            });
+          });
+          tokensUnique.sort(function (a, b) { return a.index - b.index;});
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      fetch("input/tokensHapaxes.csv")
+        .then((response) => response.text())
+        .then((data) => {
+          parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
+          parsedData.forEach(function (row) {
+            tokensHapaxes.push({
+              index: parseInt(row.index),
+              token: row.token,
+              count: parseInt(row.count),
+              tag: row.tag,
+              frequency: parseFloat(row.frequency),
+              neg: parseFloat(row.neg),
+              neu: parseFloat(row.neu),
+              pos: parseFloat(row.pos),
+              compound: parseFloat(row.compound),
+            });
+          });
+          tokensHapaxes.sort(function (a, b) { return a.index - b.index;});
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      fetch("input/tokensStemmedFinal.csv")
+        .then((response) => response.text())
+        .then((data) => {
+          parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
+          parsedData.forEach(function (row) {
+            tokensStemmedFinal.push({
+              index: parseInt(row.index),
+              token: row.token,
+              count: parseInt(row.count),
+              tag: row.tag,
+              frequency: parseFloat(row.frequency),
+              neg: parseFloat(row.neg),
+              neu: parseFloat(row.neu),
+              pos: parseFloat(row.pos),
+              compound: parseFloat(row.compound),
+            });
+          });
+          tokensStemmedFinal.sort(function (a, b) { return a.index - b.index;});
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      fetch("input/tokensStemmedUnique.csv")
+        .then((response) => response.text())
+        .then((data) => {
+          parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
+          parsedData.forEach(function (row) {
+            tokensStemmedUnique.push({
+              index: parseInt(row.index),
+              token: row.token,
+              count: parseInt(row.count),
+              tag: row.tag,
+              frequency: parseFloat(row.frequency),
+              neg: parseFloat(row.neg),
+              neu: parseFloat(row.neu),
+              pos: parseFloat(row.pos),
+              compound: parseFloat(row.compound),
+            });
+          });
+          tokensStemmedUnique.sort(function (a, b) { return a.index - b.index;});
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      fetch("input/tokensStemmedHapaxes.csv")
+        .then((response) => response.text())
+        .then((data) => {
+          parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
+          parsedData.forEach(function (row) {
+            tokensStemmedHapaxes.push({
+              index: parseInt(row.index),
+              token: row.token,
+              count: parseInt(row.count),
+              tag: row.tag,
+              frequency: parseFloat(row.frequency),
+              neg: parseFloat(row.neg),
+              neu: parseFloat(row.neu),
+              pos: parseFloat(row.pos),
+              compound: parseFloat(row.compound),
+            });
+          });
+          tokensStemmedHapaxes.sort(function (a, b) { return a.index - b.index;});
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      fetch("input/sentencesSentiment.csv")
+        .then((response) => response.text())
+        .then((data) => {
+          sentencesSentiment = Papa.parse(data, { header: true }).data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+    gatherData();
+  })();
+  
+  document.addEventListener("DOMContentLoaded", function (event) {
+    showLoading("#main-content");
+    buildAndShowDashboardHTML();
+  });
 
   // Convenience function for inserting innerHTML for 'select'
   var insertHtml = function (selector, html) {
@@ -81,6 +239,11 @@ $(function () {
   };
 
   // Load the menu categories view
+  dc.loadData = function () {
+    buildAndShowDataHTML();
+  };
+
+  // Load the menu categories view
   dc.loadAbout = function () {
     buildAndShowAboutHTML();
   };
@@ -101,32 +264,39 @@ $(function () {
     ); // False here because we are getting just regular HTML from the server, so no need to process JSON.
   }
 
-  function buildAndShowDashboardHTML() {
+  function buildAndShowDataHTML() {
     $ajaxUtils.sendGetRequest(
-      dashboardHtmlUrl,
-      function (homeHtml) {
-        $ajaxUtils.sendGetRequest(
-          paramHtmlUrl,
-          function (paramsHtml) {
-            insertHtml("#main-content", paramsHtml + homeHtml);
-
-            csvTokens.forEach(function (row) {
-              freqTable[row.Token] = parseInt(row.Frequency);
-              tokenList.push(row.Token);
-            });
-            // console.log(freqTable);
-            wordCloud();
-            barChart();
-            sentiment();
-            testDiv();
-          },
-          false
-        );
+      dataHtmlUrl,
+      function (dataHtml) {
+        insertHtml("#main-content", dataHtml);
+  
+        // txtSpecs
+        console.log(txtSpecs)
+        document.querySelector(".total-tokens").innerHTML = txtSpecs.totalTokens;
+        document.querySelector(".total-tokens-clean").innerHTML = txtSpecs.totalTokensClean;
+        document.querySelector(".total-tokens-unique").innerHTML = txtSpecs.totalTokensUnique;
+        document.querySelector(".total-tokens-hapaxes").innerHTML = txtSpecs.totalTokensHapaxes;
+        document.querySelector(".total-filtered-stemmed").innerHTML = txtSpecs.totalFilteredStemmed;
+        document.querySelector(".total-filtered-stemmed-hapaxes").innerHTML = txtSpecs.totalFilteredStemmedHapaxes;
+        document.querySelector(".total-filtered-stemmed-unique").innerHTML = txtSpecs.totalFilteredStemmedUnique;
+  
+        var table = $('#myTable').DataTable();
+  
+        for (var i = 0; i < tokensFinal.length; i++) {
+          table.row.add([          
+            tokensFinal[i].index,
+            tokensFinal[i].token,
+            tokensFinal[i].count,
+            tokensFinal[i].tag,
+            tokensFinal[i].frequency,
+            tokensFinal[i].compound
+          ]).draw();
+        }
       },
       false
     );
   }
-
+  
   function buildAndShowAboutHTML() {
     // Load home snippet page
     $ajaxUtils.sendGetRequest(
@@ -138,17 +308,136 @@ $(function () {
     ); // False here because we are getting just regular HTML from the server, so no need to process JSON.
   }
 
-  document.addEventListener("DOMContentLoaded", function (event) {
-    showLoading("#main-content");
-    buildAndShowDashboardHTML();
-  });
+  function buildAndShowDashboardHTML() {
+    $ajaxUtils.sendGetRequest(
+      dashboardHtmlUrl,
+      function (homeHtml) {
+        $ajaxUtils.sendGetRequest(
+          paramHtmlUrl,
+          function (paramsHtml) {
+            insertHtml("#main-content", paramsHtml + homeHtml);
 
-  function barChart() {
+            document
+              .getElementById("tokenset-select")
+              .addEventListener("change", tokensetChange);
+            document
+              .getElementById("sorting-select")
+              .addEventListener("change", sortingChange);
+            document
+              .getElementById("filtering-select")
+              .addEventListener("change", filteringChange);
+            document
+              .getElementById("breakpoint-select")
+              .addEventListener("change", breakpointChange);
+
+            chgTx.tokenset = true;
+            chgTx.sorting = true;
+            chgTx.filtering = true;
+            chgTx.breakpoint = true;
+
+            renderChange();
+          },
+          false
+        );
+      },
+      false
+    );
+  }
+
+  function tokensetChange() {
+    chgTx.tokenset = true;
+    renderChange();
+  }
+  function sortingChange() {
+    chgTx.sorting = true;
+    renderChange();
+  }
+  function filteringChange() {
+    chgTx.filtering = true;
+    renderChange();
+  }
+  function breakpointChange() {
+    chgTx.breakpoint = true;
+    renderChange();
+  }
+
+  function renderChange() {
+    // console.log(selectedTokens)
+
+    if (chgTx.tokenset == true) {
+      const elementHtml = document.getElementById("tokenset-select");
+      let selectedTokenset = elementHtml.options[elementHtml.selectedIndex].value;
+
+      // Set the global wordCloudInputData variable based on the selected option
+      if (selectedTokenset === "tokensStemmedCount") {
+        selectedTokens = tokensStemmedUnique;
+      } else if (selectedTokenset === "tokensCount") {
+        selectedTokens = tokensUnique;
+      }
+
+    } else if (chgTx.sorting == true) {
+      const elementHtml = document.getElementById("sorting-select");
+      let selectedSorting = elementHtml.options[elementHtml.selectedIndex].value;
+      
+      if (selectedSorting == "chronological") {
+        selectedTokens.sort(function (a, b) { return a.index - b.index;});
+      } else if (selectedSorting == "alphabetical") {
+        selectedTokens.sort((a, b) => a.token.localeCompare(b.token));
+      } else if (selectedSorting == "frequency") {
+        selectedTokens.sort(function (a, b) { return b.frequency - a.frequency;});
+      } else if (selectedSorting == "count") {
+        selectedTokens.sort(function (a, b) { return b.count - a.count;});
+      }
+    } else if (chgTx.filtering == true) {
+      const elementHtml = document.getElementById("filtering-select");
+      let selectedFiltering =
+      elementHtml.options[elementHtml.selectedIndex].value;
+
+      // Set the global wordCloudInputData variable based on the selected option
+      if (selectedFiltering === "none") {
+        selectedTokens = tokensStemmedCount;
+      } else if (selectedFiltering === "top") {
+        selectedTokens = selectedTokens.slice(0, 50);
+      } else if (selectedFiltering === "hapaxes") {
+        selectedTokens = tokensHapaxes;
+      }
+    } else if (chgTx.breakpoint == true) {
+      const elementHtml = document.getElementById("filtering-select");
+      let selectedBreakpoint =
+      elementHtml.options[elementHtml.selectedIndex].value;
+
+      // Set the global wordCloudInputData variable based on the selected option
+      if (selectedBreakpoint === "tokensStemmedCount") {
+        selectedTokenset = tokensStemmedCount;
+      } else if (selectedBreakpoint === "tokensCount") {
+        selectedTokenset = tokensCount;
+      }
+    }
+
+    $("#count-chart").html("");
+
+    wordCloud(selectedTokens);
+    barChart(selectedTokens);
+    scatterPlot(selectedTokens);
+    countChart(selectedTokens);
+    pieChart(selectedTokens);
+    heatmap(selectedTokens)
+
+    chgTx.tokenset = false;
+    chgTx.sorting = false;
+    chgTx.filtering = false;
+    chgTx.breakpoint = false;
+  }
+
+  function barChart(data) {
+    $("#bar-chart").html("");
+
+    // data=data.slice(0,20)
+    // console.log(data)
+
     var margin = { top: 20, right: 30, bottom: 70, left: 20 },
-      // width = 960 - margin.left - margin.right,
       height = 300 - margin.top - margin.bottom;
-    const container = document.getElementById("bar-chart");
-    const width = container.clientWidth;
+    const width = document.getElementById("bar-chart").clientWidth;
 
     var svg = d3
       .select("#bar-chart")
@@ -161,8 +450,8 @@ $(function () {
     // create x scale
     var x = d3.scaleBand().range([0, width]).padding(0.1);
     x.domain(
-      csvFiltered.map(function (d) {
-        return d.Token;
+      data.map(function (d) {
+        return d.token;
       })
     );
 
@@ -170,28 +459,28 @@ $(function () {
     var y = d3.scaleLinear().range([height, 0]);
     y.domain([
       0,
-      d3.max(csvFiltered, function (d) {
-        return d.Frequency;
+      d3.max(data, function (d) {
+        return d.frequency;
       }),
     ]);
 
     // create bars
     svg
       .selectAll(".bar")
-      .data(csvFiltered)
+      .data(data)
       .enter()
       .append("rect")
       .attr("class", "bar")
       .attr("x", function (d) {
-        return x(d.Token);
+        return x(d.token);
       })
       .attr("width", x.bandwidth())
       .attr("y", function (d) {
-        return y(d.Frequency);
+        return y(d.frequency);
       })
       .attr("fill", "#576CBC") // set the bars to blue
       .attr("height", function (d) {
-        return height - y(d.Frequency);
+        return height - y(d.frequency);
       });
 
     // add x-axis
@@ -212,21 +501,18 @@ $(function () {
     svg.append("g").call(d3.axisLeft(y));
   }
 
-  function wordCloud() {
+  function wordCloud(data) {
+    $("#word-cloud").html("");
     // Define the dimensions of the word cloud
-    // const width = 600;
     const height = 400;
-    const container = document.getElementById("word-cloud");
-    const width = container.clientWidth;
-    // const height = container.clientHeight;
+    const width = document.getElementById("word-cloud").clientWidth;
 
     // Define the word cloud layout
     const layout = d3.layout
       .cloud()
       .size([width, height])
-      .words(
-        Object.entries(freqTable).map(([text, value]) => ({ text, value }))
-      )
+      .words(data.map((d) => ({ text: d.token, value: d.count })))
+      // .words(Object.entries(data).map(([text, value]) => ({ text, value })))
       .padding(5)
       .rotate(() => ~~(Math.random() * 2) * 90)
       .fontSize((d) => d.value * 10)
@@ -259,65 +545,341 @@ $(function () {
     }
   }
 
-  function sentiment() { 
-    // Sample data for text analysis
-    const data = [
-      { word: "happy", frequency: 10, sentiment: 0.8 },
-      { word: "sad", frequency: 5, sentiment: -0.6 },
-      { word: "angry", frequency: 8, sentiment: -0.4 },
-      { word: "love", frequency: 12, sentiment: 0.9 },
-      { word: "hate", frequency: 4, sentiment: -0.8 },
-    ];
-    
+  function scatterPlot(inputData) {
+    $("#scatter-plot").html("");
+    const data = inputData.filter((item) => item.compound !== 0.0);
+
     // Create a scatterplot of sentiment vs frequency
     const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-    const width = 600 - margin.left - margin.right;
+    const width = document.getElementById("scatter-plot").clientWidth - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
-    
+
     const svg = d3
-      .select("#sentiment")
+      .select("#scatter-plot")
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
-    
-    const x = d3.scaleLinear().domain([0, d3.max(data, (d) => d.frequency)]).range([0, width]);
+
+    const x = d3
+      .scaleLinear()
+      .domain([0, d3.max(data, (d) => d.count)])
+      .range([0, width]);
     const y = d3.scaleLinear().domain([-1, 1]).range([height, 0]);
-    
+
     svg
       .append("g")
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(x));
-    
+
     svg.append("g").call(d3.axisLeft(y));
-    
-    svg
+
+    // Add circles and text labels
+    const dots = svg
       .selectAll("dot")
       .data(data)
       .enter()
       .append("circle")
-      .attr("cx", (d) => x(d.frequency))
-      .attr("cy", (d) => y(d.sentiment))
+      .attr("cx", (d) => x(d.count))
+      .attr("cy", (d) => y(d.compound))
       .attr("r", 5)
-      .style("fill", "blue");
-    
-    svg
-      .selectAll("text")
+      .style("fill", "#19376D");
+
+    const labels = svg
+      .selectAll("label")
       .data(data)
       .enter()
       .append("text")
-      .attr("x", (d) => x(d.frequency) + 10)
-      .attr("y", (d) => y(d.sentiment))
-      .text((d) => d.word)
-      .style("font-size", "12px");
-        
+      .attr("x", (d) => x(d.count) + 10)
+      .attr("y", (d) => y(d.compound) + 5)
+      .text("");
+
+    dots
+      .on("mouseover", function (event, d) {
+        d3.select(this).attr("r", 8);
+        // console.log(d.token)
+        // TODO
+        svg
+          .append("text")
+          .attr("class", "tooltip")
+          .attr("x", x(d.count) + 15)
+          .attr("y", y(d.compound))
+          .text(d.token);
+      })
+      .on("mouseout", function (event, d) {
+        d3.select(this).attr("r", 5);
+        svg.select(".tooltip").remove();
+      });
   }
+
+  function countChart(data) {
+    // console.log(data);
+    var xField = "token";
+    var yField = "count";
+
+    var selectorOptions = {
+      buttons: [
+        {
+          step: "alphabetical",
+          stepmode: "backward",
+          count: 1,
+          label: "A - C",
+        },
+        {
+          step: "alphabetical",
+          stepmode: "backward",
+          count: 1,
+          label: "D - F",
+        },
+        {
+          step: "alphabetical",
+          stepmode: "backward",
+          count: 1,
+          label: "G - I",
+        },
+        {
+          step: "alphabetical",
+          stepmode: "backward",
+          count: 1,
+          label: "J - L",
+        },
+        {
+          step: "all",
+        },
+      ],
+    };
+    
+    var data = prepData();
+    var layout = {
+      xaxis: {
+        rangeselector: selectorOptions,
+        rangeslider: {},
+      },
+      yaxis: {
+        fixedrange: true,
+      },
+      margin: {
+        l: 15, // left margin
+        r: 15, // right margin
+        b: 0, // bottom margin
+        t: 0, // top margin
+        pad: 0, // padding between the plot and the margins
+      },
+      width: document.getElementById("count-chart").clientWidth,
+      height: 400, // height of the plot in pixels
+    };
+
+    Plotly.plot("count-chart", data, layout, { showSendToCloud: true });
+
+    function prepData() {
+      var x = [];
+      var y = [];
+
+      // // SORT TOKENS
+      // tokensUnique.sort(function(a, b) {
+      //   return a.token.localeCompare(b.token);
+      // });
+
+      data.forEach(function (datum, i) {
+        // , i
+        // console.log(datum) // WHAT THE HECK TODO FLIP
+        x.push(datum[xField]);
+        y.push(datum[yField]);
+      });
+
+      return [
+        {
+          mode: "lines",
+          x: x,
+          y: y,
+        },
+      ];
+    }
+  }
+
+  function pieChart(data) {
+    var tagCounts = {
+      'Noun': 0,
+      'Verb': 0,
+      'Adjective': 0,
+      'Adverb': 0,
+      'Pronoun': 0,
+      'Determiner': 0,
+      'Other': 0
+    };
   
-  function testDiv() { //test-div
+    for (var i = 0; i < data.length; i++) {
+      var tag = data[i].tag;
+      if (tag.startsWith('NN')) {
+        tagCounts['Noun'] += data[i].count;
+      } else if (tag.startsWith('VB')) {
+        tagCounts['Verb'] += data[i].count;
+      } else if (tag.startsWith('JJ')) {
+        tagCounts['Adjective'] += data[i].count;
+      } else if (tag.startsWith('RB')) {
+        tagCounts['Adverb'] += data[i].count;
+      } else if (tag.startsWith('PRP') || tag == 'WP' || tag == 'WDT') {
+        tagCounts['Pronoun'] += data[i].count;
+      } else if (tag == 'DT' || tag == 'PDT') {
+        tagCounts['Determiner'] += data[i].count;
+      } else {
+        tagCounts['Other'] += data[i].count;
+      }
+    }
+  
+    var tagCountData = {
+      labels: Object.keys(tagCounts),
+      datasets: [{
+        data: Object.values(tagCounts),
+        backgroundColor: [
+          '#576cbc',
+          '#bc579f',
+          '#bca757',
+          '#b2524d',
+          '#4dadb2',
+          '#844db2',
+          '#57bc75'
+        ],
+        hoverBackgroundColor: [
+          '#576cbc',
+          '#bc579f',
+          '#bca757',
+          '#57bc75',
+          '#4dadb2',
+          '#844db2',
+          '#b2524d'
+        ]
+      }]
+    };
+  
+    var ctx = document.getElementById('tag-chart').getContext('2d');
+  
+    // Check if there is an existing Chart object and destroy it
+    var existingChart = Chart.getChart(ctx);
+    if (existingChart) {
+      existingChart.destroy();
+    }
+    var tagCountChart = new Chart(ctx, {
+      type: 'pie',
+      data: tagCountData,
+      options: {
+        legend: {
+          position: 'bottom'
+        }
+      }
+    });    
+  }
+      
+  const tagCategoryMapping = {
+    "NN": "Noun",
+    "NNS": "Noun",
+    "NNP": "Noun",
+    "NNPS": "Noun",
+    "VB": "Verb",
+    "VBD": "Verb",
+    "VBG": "Verb",
+    "VBN": "Verb",
+    "VBP": "Verb",
+    "VBZ": "Verb",
+    "JJ": "Adjective",
+    "JJR": "Adjective",
+    "JJS": "Adjective",
+    "RB": "Adverb",
+    "RBR": "Adverb",
+    "RBS": "Adverb",
+    "PRP": "Pronoun",
+    "WP": "Pronoun",
+    "WDT": "Pronoun",
+    "DT": "Determiner",
+    "PDT": "Determiner",
+    "CC": "Other",
+    "IN": "Other",
+    "MD": "Other",
+    "WRB": "Other",
+    "CD": "Other",
+    "FW": "Other",
+    "RP": "Other",
+    "EX": "Other",
+    "TO": "Other",
+    "PRP$": "Other",
+    // any other tags not covered by the function
+    // will be mapped to "Other"
+    "default": "Other"
+  };
+  
+  function heatmap(inputData) {
+    $("#heatmap").html("");
+
+    data = inputData.map((d) => ({
+      tagCategory: tagCategoryMapping[d.tag],
+      index: d.index,
+      tag: d.tag,
+      token: d.token,
+      count: d.count
+    }));
+    
+    const margin = { top: 5, right: 5, bottom: 55, left: 50 };
+    const width = document.getElementById("heatmap").clientWidth - margin.left - margin.right;
+    const height = 400 - margin.top - margin.bottom;
+  
+    const xLabels = data.map((d) => d.tagCategory);
+    const yLabels = data.map((d) => d.token);
+    const colorScale = d3.scaleSequential(d3.interpolateBlues).domain([0, d3.max(data, (d) => d.count)]);
+  
+    const svg = d3
+    .select("#heatmap")
+    .append("svg")
+    .style("background-color", "white") // Add this line to set the background color
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+    
+    const xScale = d3
+      .scaleBand()
+      .domain(xLabels)
+      .range([0, width])
+      .paddingInner(0.05)
+      .align(0.1);
+  
+    const yScale = d3
+      .scaleBand()
+      .domain(yLabels)
+      .range([height, 0])
+      .paddingInner(0.05)
+      .align(0.1);
+  
+    svg
+      .selectAll()
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("x", (d) => xScale(d.tagCategory))
+      .attr("y", (d) => yScale(d.token))
+      .attr("width", xScale.bandwidth())
+      .attr("height", yScale.bandwidth())
+      .style("fill", (d) => colorScale(d.count));
+  
+    svg
+      .append("g")
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(xScale))
+      .selectAll("text")
+      .attr("transform", "rotate(-90)")
+      .attr("dy", "0.75em")
+      .attr("dx", "-0.5em")
+      .style("text-anchor", "end");
+  
+    svg.append("g").call(d3.axisLeft(yScale));
   }
   
 
+  function testDiv() {}
+
+  
   global.$dc = dc;
 })(window);
 
+// graph with categories
+// output most used word

@@ -143,3 +143,24 @@ body {
     width: 100%;
   }
 }
+
+
+#myTable {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#myTable td, #myTable th {
+  border: 1px solid #ddd;
+  padding: 3px;
+  text-align: left;
+}
+
+#myTable th {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: #19376D;
+  color: white;
+}

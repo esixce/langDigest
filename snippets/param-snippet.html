@@ -1,25 +1,35 @@
 <div class="row">
-    <div class="col-sm-4 dropdown box">
-      <label for="tokenSet">Token Set:</label>
-      <select id="tokenSet" name="tokenSet">
-        <option value="option1">All tokens</option>
-        <option value="option2">Stemmed</option>
-        <option value="option3">Option 3</option>
+  <form id="word-cloud-form">
+    <div class="col-sm-3 dropdown box">
+      <label for="tokenset-select">Token Set:</label>
+      <select id="tokenset-select" name="tokenset-select">
+        <option value="tokensCount">Clean Tokens</option>
+        <option value="tokensStemmedCount">Stemmed Tokens</option>
       </select>
     </div>
-    <div class="col-sm-4 dropdown box">
-      <label for="my-dropdown">Break point by:</label>
-      <select id="my-dropdown" name="my-dropdown">
-        <option value="option1">Word</option>
-        <option value="option2">Sentence</option>
+    <div class="col-sm-3 dropdown box">
+      <label for="filtering-select">Filtering:</label>
+      <select id="filtering-select" name="filtering-select">
+        <option value="none">All tokens</option>
+        <option value="top">Top 50</option>
+        <option value="hapaxes">Hapaxes</option>
       </select>
     </div>
-    <div class="col-sm-4 dropdown box">
-      <label for="my-dropdown">Break point by:</label>
-      <select id="my-dropdown" name="my-dropdown">
-        <option value="option1">Word</option>
-        <option value="option2">Sentence</option>
+    <div class="col-sm-3 dropdown box">
+      <label for="breakpoint-select">Break point:</label>
+      <select id="breakpoint-select" name="breakpoint-select">
+        <option value="word">Word</option>
+        <option value="sentence">Sentence</option>
       </select>
     </div>
-  </div>
-  
+    <div class="col-sm-3 dropdown box">
+      <label for="sorting-select">Sorting:</label>
+      <select id="sorting-select" name="sorting-select">
+        <option value="index">Chronological</option>
+        <option value="token">Alphabetical</option>
+        <option value="frequency">Frequency</option>
+        <option value="count">Count</option>
+      </select>
+    </div>
+  </form>
+</div>
