@@ -1,13 +1,13 @@
 <div class="row">
   <form id="word-cloud-form">
-    <div class="col-sm-3 dropdown box">
+    <div class="col-sm-4 dropdown box">
       <label for="tokenset-select">Token Set:</label>
       <select id="tokenset-select" name="tokenset-select">
         <option value="tokensCount">Clean Tokens</option>
-        <option value="tokensStemmedCount">Stemmed Tokens</option>
+        <option value="tokensStemmedCount" selected>Stemmed Tokens</option>
       </select>
     </div>
-    <div class="col-sm-3 dropdown box">
+    <div class="col-sm-4 dropdown box">
       <label for="filtering-select">Filtering:</label>
       <select id="filtering-select" name="filtering-select">
         <option value="none">All tokens</option>
@@ -15,7 +15,7 @@
         <option value="hapaxes">Hapaxes</option>
       </select>
     </div>
-    <div class="col-sm-3 dropdown box">
+    <div class="col-sm-4 dropdown box">
       <label for="sorting-select">Sorting:</label>
       <select id="sorting-select" name="sorting-select">
         <option value="index">Chronological</option>

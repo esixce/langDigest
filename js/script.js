@@ -1,4 +1,3 @@
-
 $(function () {
   $("#navbarToggle").blur(function (event) {
     var screenWidth = window.innerWidth;
@@ -865,9 +864,9 @@ $(function () {
         svg
           .append("text")
           .attr("class", "label")
-          .attr("x", -yScale(d.token)) // Place the label at the corresponding y-coordinate of the rectangle
-          .attr("y", xScale.bandwidth() - 80) // Place the label at the center of the corresponding x-coordinate of the rectangle
-          .attr("dy", ".35em")
+          .attr("x", -200) // Place the label at the center of the corresponding x-coordinate of the rectangle
+          .attr("y", - 30) // Place the label at the center of the corresponding y-coordinate of the rectangle
+          .attr("dy", ".7em")
           .attr("transform", "rotate(-90)") // Rotate the label
           .text(d.token);
       })
@@ -990,77 +989,73 @@ $(function () {
 //     .call(d3.axisLeft(yScale));
 //   }
 
+// function heatmap(inputData) {
+//   $("#heatmap").html("");
 
+//   data = inputData.map((d) => ({
+//     tagCategory: tagCategoryMapping[d.tag],
+//     index: d.index,
+//     tag: d.tag,
+//     token: d.token,
+//     count: d.count,
+//   }));
 
+//   const margin = { top: 5, right: 5, bottom: 55, left: 50 };
+//   const width =
+//     document.getElementById("heatmap").clientWidth -
+//     margin.left -
+//     margin.right;
+//   const height = 400 - margin.top - margin.bottom;
 
+//   const xLabels = data.map((d) => d.tagCategory);
+//   const yLabels = data.map((d) => d.token);
+//   const colorScale = d3
+//     .scaleSequential(d3.interpolateBlues)
+//     .domain([0, d3.max(data, (d) => d.count)]);
 
-  // function heatmap(inputData) {
-  //   $("#heatmap").html("");
+//   const svg = d3
+//     .select("#heatmap")
+//     .append("svg")
+//     .style("background-color", "white") // Add this line to set the background color
+//     .attr("width", width + margin.left + margin.right)
+//     .attr("height", height + margin.top + margin.bottom)
+//     .append("g")
+//     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  //   data = inputData.map((d) => ({
-  //     tagCategory: tagCategoryMapping[d.tag],
-  //     index: d.index,
-  //     tag: d.tag,
-  //     token: d.token,
-  //     count: d.count,
-  //   }));
+//   const xScale = d3
+//     .scaleBand()
+//     .domain(xLabels)
+//     .range([0, width])
+//     .paddingInner(0.05)
+//     .align(0.1);
 
-  //   const margin = { top: 5, right: 5, bottom: 55, left: 50 };
-  //   const width =
-  //     document.getElementById("heatmap").clientWidth -
-  //     margin.left -
-  //     margin.right;
-  //   const height = 400 - margin.top - margin.bottom;
+//   const yScale = d3
+//     .scaleBand()
+//     .domain(yLabels)
+//     .range([height, 0])
+//     .paddingInner(0.05)
+//     .align(0.1);
 
-  //   const xLabels = data.map((d) => d.tagCategory);
-  //   const yLabels = data.map((d) => d.token);
-  //   const colorScale = d3
-  //     .scaleSequential(d3.interpolateBlues)
-  //     .domain([0, d3.max(data, (d) => d.count)]);
+//   svg
+//     .selectAll()
+//     .data(data)
+//     .enter()
+//     .append("rect")
+//     .attr("x", (d) => xScale(d.tagCategory))
+//     .attr("y", (d) => yScale(d.token))
+//     .attr("width", xScale.bandwidth())
+//     .attr("height", yScale.bandwidth())
+//     .style("fill", (d) => colorScale(d.count));
 
-  //   const svg = d3
-  //     .select("#heatmap")
-  //     .append("svg")
-  //     .style("background-color", "white") // Add this line to set the background color
-  //     .attr("width", width + margin.left + margin.right)
-  //     .attr("height", height + margin.top + margin.bottom)
-  //     .append("g")
-  //     .attr("transform", `translate(${margin.left},${margin.top})`);
+//   svg
+//     .append("g")
+//     .attr("transform", `translate(0,${height})`)
+//     .call(d3.axisBottom(xScale))
+//     .selectAll("text")
+//     .attr("transform", "rotate(-90)")
+//     .attr("dy", "0.75em")
+//     .attr("dx", "-0.5em")
+//     .style("text-anchor", "end");
 
-  //   const xScale = d3
-  //     .scaleBand()
-  //     .domain(xLabels)
-  //     .range([0, width])
-  //     .paddingInner(0.05)
-  //     .align(0.1);
-
-  //   const yScale = d3
-  //     .scaleBand()
-  //     .domain(yLabels)
-  //     .range([height, 0])
-  //     .paddingInner(0.05)
-  //     .align(0.1);
-
-  //   svg
-  //     .selectAll()
-  //     .data(data)
-  //     .enter()
-  //     .append("rect")
-  //     .attr("x", (d) => xScale(d.tagCategory))
-  //     .attr("y", (d) => yScale(d.token))
-  //     .attr("width", xScale.bandwidth())
-  //     .attr("height", yScale.bandwidth())
-  //     .style("fill", (d) => colorScale(d.count));
-
-  //   svg
-  //     .append("g")
-  //     .attr("transform", `translate(0,${height})`)
-  //     .call(d3.axisBottom(xScale))
-  //     .selectAll("text")
-  //     .attr("transform", "rotate(-90)")
-  //     .attr("dy", "0.75em")
-  //     .attr("dx", "-0.5em")
-  //     .style("text-anchor", "end");
-
-  //   svg.append("g").call(d3.axisLeft(yScale));
-  // }
+//   svg.append("g").call(d3.axisLeft(yScale));
+// }
