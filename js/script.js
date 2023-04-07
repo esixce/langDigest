@@ -381,22 +381,6 @@ $(function () {
       } else if (selTset === "tokensCount") {
         selectedTokens = tokensHapaxes;
       }
-
-      if (selSing == "chronological") {
-        selectedTokens.sort(function (a, b) {
-          return a.index - b.index;
-        });
-      } else if (selSing == "alphabetical") {
-        selectedTokens.sort((a, b) => a.token.localeCompare(b.token));
-      } else if (selSing == "frequency") {
-        selectedTokens.sort(function (a, b) {
-          return b.frequency - a.frequency;
-        });
-      } else if (selSing == "count") {
-        selectedTokens.sort(function (a, b) {
-          return b.count - a.count;
-        });
-      }
     } else {
       // Set the global wordCloudInputData variable based on the selected option
       if (selTset === "tokensStemmedCount") {
@@ -404,22 +388,21 @@ $(function () {
       } else if (selTset === "tokensCount") {
         selectedTokens = tokensUnique;
       }
-
-      if (selSing == "chronological") {
-        selectedTokens.sort(function (a, b) {
-          return a.index - b.index;
-        });
-      } else if (selSing == "alphabetical") {
-        selectedTokens.sort((a, b) => a.token.localeCompare(b.token));
-      } else if (selSing == "frequency") {
-        selectedTokens.sort(function (a, b) {
-          return b.frequency - a.frequency;
-        });
-      } else if (selSing == "count") {
-        selectedTokens.sort(function (a, b) {
-          return b.count - a.count;
-        });
-      }
+    }
+    if (selSing == "chronological") {
+      selectedTokens.sort(function (a, b) {
+        return a.index - b.index;
+      });
+    } else if (selSing == "alphabetical") {
+      selectedTokens.sort((a, b) => a.token.localeCompare(b.token));
+    } else if (selSing == "frequency") {
+      selectedTokens.sort(function (a, b) {
+        return b.frequency - a.frequency;
+      });
+    } else if (selSing == "count") {
+      selectedTokens.sort(function (a, b) {
+        return b.count - a.count;
+      });
     }
     // Set the global wordCloudInputData variable based on the selected option
     if (selFing === "top") {
@@ -565,15 +548,12 @@ $(function () {
   function scatterPlot(inputData) {
     $("#scatter-plot").html("");
     const data = inputData.filter((item) => item.compound !== 0.0);
-
+  
     // Create a scatterplot of sentiment vs frequency
     const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-    const width =
-      document.getElementById("scatter-plot").clientWidth -
-      margin.left -
-      margin.right;
+    const width = document.getElementById("scatter-plot").clientWidth - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
-
+  
     const svg = d3
       .select("#scatter-plot")
       .append("svg")
@@ -581,20 +561,20 @@ $(function () {
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
-
+  
     const x = d3
       .scaleLinear()
       .domain([0, d3.max(data, (d) => d.count)])
       .range([0, width]);
     const y = d3.scaleLinear().domain([-1, 1]).range([height, 0]);
-
+  
     svg
       .append("g")
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(x));
-
+  
     svg.append("g").call(d3.axisLeft(y));
-
+  
     // Add circles and text labels
     const dots = svg
       .selectAll("dot")
@@ -605,33 +585,94 @@ $(function () {
       .attr("cy", (d) => y(d.compound))
       .attr("r", 5)
       .style("fill", "#19376D");
-
-    const labels = svg
-      .selectAll("label")
-      .data(data)
-      .enter()
-      .append("text")
-      .attr("x", (d) => x(d.count) + 10)
-      .attr("y", (d) => y(d.compound) + 5)
-      .text("");
-
+  
     dots
       .on("mouseover", function (event, d) {
         d3.select(this).attr("r", 8);
-        // console.log(d.token)
-        // TODO
         svg
           .append("text")
-          .attr("class", "tooltip")
-          .attr("x", x(d.count) + 15)
-          .attr("y", y(d.compound))
+          .attr("class", "label")
+          .attr("x", x(d.count) + 10)
+          .attr("y", y(d.compound) + 5)
           .text(d.token);
       })
       .on("mouseout", function (event, d) {
         d3.select(this).attr("r", 5);
-        svg.select(".tooltip").remove();
+        svg.select(".label").remove();
       });
   }
+  
+
+  // function scatterPlot(inputData) {
+  //   $("#scatter-plot").html("");
+  //   const data = inputData.filter((item) => item.compound !== 0.0);
+
+  //   // Create a scatterplot of sentiment vs frequency
+  //   const margin = { top: 20, right: 30, bottom: 30, left: 40 };
+  //   const width =
+  //     document.getElementById("scatter-plot").clientWidth -
+  //     margin.left -
+  //     margin.right;
+  //   const height = 400 - margin.top - margin.bottom;
+
+  //   const svg = d3
+  //     .select("#scatter-plot")
+  //     .append("svg")
+  //     .attr("width", width + margin.left + margin.right)
+  //     .attr("height", height + margin.top + margin.bottom)
+  //     .append("g")
+  //     .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  //   const x = d3
+  //     .scaleLinear()
+  //     .domain([0, d3.max(data, (d) => d.count)])
+  //     .range([0, width]);
+  //   const y = d3.scaleLinear().domain([-1, 1]).range([height, 0]);
+
+  //   svg
+  //     .append("g")
+  //     .attr("transform", `translate(0,${height})`)
+  //     .call(d3.axisBottom(x));
+
+  //   svg.append("g").call(d3.axisLeft(y));
+
+  //   // Add circles and text labels
+  //   const dots = svg
+  //     .selectAll("dot")
+  //     .data(data)
+  //     .enter()
+  //     .append("circle")
+  //     .attr("cx", (d) => x(d.count))
+  //     .attr("cy", (d) => y(d.compound))
+  //     .attr("r", 5)
+  //     .style("fill", "#19376D");
+
+  //   const labels = svg
+  //     .selectAll("label")
+  //     .data(data)
+  //     .enter()
+  //     .append("text")
+  //     .attr("x", (d) => x(d.count) + 10)
+  //     .attr("y", (d) => y(d.compound) + 5)
+  //     .text((d) => d.token);
+
+  // }
+    // dots
+    //   .on("mouseover", function (event, d) {
+    //     d3.select(this).attr("r", 8);
+    //     // console.log(d.token)
+    //     // TODO
+    //     svg
+    //       .append("text")
+    //       .attr("class", "tooltip")
+    //       .attr("x", x(d.count) + 15)
+    //       .attr("y", y(d.compound))
+    //       .text(d.token);
+    //   })
+    //   .on("mouseout", function (event, d) {
+    //     d3.select(this).attr("r", 5);
+    //     svg.select(".tooltip").remove();
+    //   });
 
   function countChart(data) {
     // console.log(data);
