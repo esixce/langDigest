@@ -328,6 +328,18 @@ $(function () {
       },
       false
     ); // False here because we are getting just regular HTML from the server, so no need to process JSON.
+
+    // stHtml = document.getElementById("filtering-select");
+    // let selectedBreakpoint = stHtml.options[stHtml.selectedIndex].value;
+    // console.log(selectedBreakpoint)
+    // Set the global wordCloudInputData variable based on the selected option
+    // if (selectedBreakpoint === "tokensStemmedCount") {
+    //   selTset = tokensStemmedCount;
+    // } else if (selectedBreakpoint === "tokensCount") {
+    //   selTset = tokensCount;
+    // }
+
+
   }
 
   function buildAndShowDashboardHTML() {
@@ -409,15 +421,6 @@ $(function () {
       selectedTokens = selectedTokens.slice(0, 50);
     }
 
-    // stHtml = document.getElementById("filtering-select");
-    // let selectedBreakpoint = stHtml.options[stHtml.selectedIndex].value;
-    // console.log(selectedBreakpoint)
-    // Set the global wordCloudInputData variable based on the selected option
-    // if (selectedBreakpoint === "tokensStemmedCount") {
-    //   selTset = tokensStemmedCount;
-    // } else if (selectedBreakpoint === "tokensCount") {
-    //   selTset = tokensCount;
-    // }
 
     $("#count-chart").html("");
 
@@ -545,11 +548,9 @@ $(function () {
     }
   }
 
-  function scatterPlot(inputData) {
+  function scatterPlot(data) {
     $("#scatter-plot").html("");
-    const data = inputData.filter((item) => item.compound !== 0.0);
 
-    // Create a scatterplot of sentiment vs frequency
     const margin = { top: 20, right: 30, bottom: 30, left: 40 };
     const width =
       document.getElementById("scatter-plot").clientWidth -
@@ -595,8 +596,8 @@ $(function () {
         svg
           .append("text")
           .attr("class", "label")
-          .attr("x", x(d.count) + 10)
-          .attr("y", y(d.compound) + 5)
+          .attr("x", x(d.count) - 15)
+          .attr("y", y(d.compound) - 15)
           .text(d.token);
       })
       .on("mouseout", function (event, d) {
@@ -893,169 +894,5 @@ $(function () {
       .style("opacity", 0); // add this line to hide the y-axis labels
   }
 
-  function testDiv() {}
-
   global.$dc = dc;
 })(window);
-
-// graph with categories
-// output most used word
-
-// function heatmap(inputData) {
-//   $("#heatmap").html("");
-
-//   data = inputData.map((d) => ({
-//     tagCategory: tagCategoryMapping[d.tag],
-//     index: d.index,
-//     tag: d.tag,
-//     token: d.token,
-//     count: d.count,
-//   }));
-
-//   const margin = { top: 5, right: 5, bottom: 55, left: 50 };
-//   const width =
-//     document.getElementById("heatmap").clientWidth -
-//     margin.left -
-//     margin.right;
-//   const height = 400 - margin.top - margin.bottom;
-
-//   const xLabels = data.map((d) => d.tagCategory);
-//   const yLabels = data.map((d) => d.token);
-//   const colorScale = d3
-//     .scaleSequential(d3.interpolateBlues)
-//     .domain([0, d3.max(data, (d) => d.count)]);
-
-//   const svg = d3
-//     .select("#heatmap")
-//     .append("svg")
-//     .style("background-color", "white") // Add this line to set the background color
-//     .attr("width", width + margin.left + margin.right)
-//     .attr("height", height + margin.top + margin.bottom)
-//     .append("g")
-//     .attr("transform", `translate(${margin.left},${margin.top})`);
-
-//   const xScale = d3
-//     .scaleBand()
-//     .domain(xLabels)
-//     .range([0, width])
-//     .paddingInner(0.05)
-//     .align(0.1);
-
-//   const yScale = d3
-//     .scaleBand()
-//     .domain(yLabels)
-//     .range([height, 0])
-//     .paddingInner(0.05)
-//     .align(0.1);
-
-//   svg
-//     .selectAll()
-//     .data(data)
-//     .enter()
-//     .append("rect")
-//     .attr("x", (d) => xScale(d.tagCategory))
-//     .attr("y", (d) => yScale(d.token))
-//     .attr("width", xScale.bandwidth())
-//     .attr("height", yScale.bandwidth())
-//     .style("fill", (d) => colorScale(d.count))
-//     .on("mouseover", function (event, d) {
-//       d3.select(this).style("opacity", 0.7); // Change the opacity of the rectangle on hover
-//       svg
-//         .append("text")
-//         .attr("class", "label")
-//         .attr("x", -yScale(d.token)) // Place the label at the corresponding y-coordinate of the rectangle
-//         .attr("y", xScale(d.tagCategory) + xScale.bandwidth() / 2) // Place the label at the center of the corresponding x-coordinate of the rectangle
-//         .attr("dy", ".35em")
-//         .attr("transform", "rotate(-90)") // Rotate the label
-//         .text(d.token);
-//     })
-//     .on("mouseout", function (event, d) {
-//       d3.select(this).style("opacity", 1); // Reset the opacity of the rectangle on mouseout
-//       svg.select(".label").remove(); // Remove the label
-//     });
-
-//     svg
-//     .append("g")
-//     .attr("transform", `translate(0,${height})`)
-//     .call(d3.axisBottom(xScale))
-//     .selectAll("text")
-//     .attr("transform", "rotate(-90)")
-//     .attr("dy", "0.75em")
-//     .attr("dx", "-0.5em")
-//     .style("text-anchor", "end");
-
-//     svg
-//     .append("g")
-//     .call(d3.axisLeft(yScale));
-//   }
-
-// function heatmap(inputData) {
-//   $("#heatmap").html("");
-
-//   data = inputData.map((d) => ({
-//     tagCategory: tagCategoryMapping[d.tag],
-//     index: d.index,
-//     tag: d.tag,
-//     token: d.token,
-//     count: d.count,
-//   }));
-
-//   const margin = { top: 5, right: 5, bottom: 55, left: 50 };
-//   const width =
-//     document.getElementById("heatmap").clientWidth -
-//     margin.left -
-//     margin.right;
-//   const height = 400 - margin.top - margin.bottom;
-
-//   const xLabels = data.map((d) => d.tagCategory);
-//   const yLabels = data.map((d) => d.token);
-//   const colorScale = d3
-//     .scaleSequential(d3.interpolateBlues)
-//     .domain([0, d3.max(data, (d) => d.count)]);
-
-//   const svg = d3
-//     .select("#heatmap")
-//     .append("svg")
-//     .style("background-color", "white") // Add this line to set the background color
-//     .attr("width", width + margin.left + margin.right)
-//     .attr("height", height + margin.top + margin.bottom)
-//     .append("g")
-//     .attr("transform", `translate(${margin.left},${margin.top})`);
-
-//   const xScale = d3
-//     .scaleBand()
-//     .domain(xLabels)
-//     .range([0, width])
-//     .paddingInner(0.05)
-//     .align(0.1);
-
-//   const yScale = d3
-//     .scaleBand()
-//     .domain(yLabels)
-//     .range([height, 0])
-//     .paddingInner(0.05)
-//     .align(0.1);
-
-//   svg
-//     .selectAll()
-//     .data(data)
-//     .enter()
-//     .append("rect")
-//     .attr("x", (d) => xScale(d.tagCategory))
-//     .attr("y", (d) => yScale(d.token))
-//     .attr("width", xScale.bandwidth())
-//     .attr("height", yScale.bandwidth())
-//     .style("fill", (d) => colorScale(d.count));
-
-//   svg
-//     .append("g")
-//     .attr("transform", `translate(0,${height})`)
-//     .call(d3.axisBottom(xScale))
-//     .selectAll("text")
-//     .attr("transform", "rotate(-90)")
-//     .attr("dy", "0.75em")
-//     .attr("dx", "-0.5em")
-//     .style("text-anchor", "end");
-
-//   svg.append("g").call(d3.axisLeft(yScale));
-// }
