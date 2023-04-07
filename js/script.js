@@ -16,196 +16,201 @@ $(function () {
   var aboutHtmlUrl = "snippets/about-snippet.html";
   var dataHtmlUrl = "snippets/data-snippet.html";
 
-  let txt;
-  let txtSpecs;
-  let tokensFinal = [];
-  let tokensUnique = [];
-  let tokensHapaxes = [];
-  let tokensStemmedFinal = [];
-  let tokensStemmedUnique = [];
-  let tokensStemmedHapaxes = [];
-  let sentencesSentiment = [];
+  function ChatData() {
+    this.txt = null;
+    this.txtSpecs = null;
+    this.tokensF = [];
+    this.tokensU = [];
+    this.tokensH = [];
+    this.tokensSF = [];
+    this.tokensSU = [];
+    this.tokensSH = [];
+    this.sentSent = [];
+  }
+  
+  const inputA = new ChatData();
+  const inputB = new ChatData();
+  
+  let selSet;
 
-  let selectedTokens;
+  gatherData(1, inputA);
+  gatherData(2, inputB);
 
-  (function () {
-    function gatherData() {
-      fetch("input/chatgpt.txt")
-        .then((response) => response.text())
-        .then((data) => {
-          txt = Papa.parse(data, { header: false }).data;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+  function gatherData(fileIndex, fileSet) {
+    fetch("input/chatgpt" + fileIndex + ".txt")
+      .then((response) => response.text())
+      .then((data) => {
+        fileSet.txt = Papa.parse(data, { header: false }).data;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
-      fetch("input/txtSpecs.txt")
-        .then((response) => response.json())
-        .then((data) => {
-          txtSpecs = data;
-        });
+    fetch("input/txtSpecs" + fileIndex + ".txt")
+      .then((response) => response.json())
+      .then((data) => {
+        window[`txtSpecs${fileIndex}`] = data;
+      });
 
-      fetch("input/tokensFinal.csv")
-        .then((response) => response.text())
-        .then((data) => {
-          parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
-          parsedData.forEach(function (row) {
-            tokensFinal.push({
-              index: parseInt(row.index),
-              token: row.token,
-              count: parseInt(row.count),
-              tag: row.tag,
-              frequency: parseFloat(row.frequency),
-              neg: parseFloat(row.neg),
-              neu: parseFloat(row.neu),
-              pos: parseFloat(row.pos),
-              compound: parseFloat(row.compound),
-            });
-            tokensFinal.sort(function (a, b) {
-              return a.index - b.index;
-            });
+    fetch("input/tokensFinal" + fileIndex + ".csv")
+      .then((response) => response.text())
+      .then((data) => {
+        parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
+        parsedData.forEach(function (row) {
+          fileSet.tokensF.push({
+            index: parseInt(row.index),
+            token: row.token,
+            count: parseInt(row.count),
+            tag: row.tag,
+            frequency: parseFloat(row.frequency),
+            neg: parseFloat(row.neg),
+            neu: parseFloat(row.neu),
+            pos: parseFloat(row.pos),
+            compound: parseFloat(row.compound),
           });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-
-      fetch("input/tokensUnique.csv")
-        .then((response) => response.text())
-        .then((data) => {
-          parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
-          parsedData.forEach(function (row) {
-            tokensUnique.push({
-              index: parseInt(row.index),
-              token: row.token,
-              count: parseInt(row.count),
-              tag: row.tag,
-              frequency: parseFloat(row.frequency),
-              neg: parseFloat(row.neg),
-              neu: parseFloat(row.neu),
-              pos: parseFloat(row.pos),
-              compound: parseFloat(row.compound),
-            });
-          });
-          tokensUnique.sort(function (a, b) {
+          fileSet.tokensF.sort(function (a, b) {
             return a.index - b.index;
           });
-        })
-        .catch((error) => {
-          console.error(error);
         });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
-      fetch("input/tokensHapaxes.csv")
-        .then((response) => response.text())
-        .then((data) => {
-          parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
-          parsedData.forEach(function (row) {
-            tokensHapaxes.push({
-              index: parseInt(row.index),
-              token: row.token,
-              count: parseInt(row.count),
-              tag: row.tag,
-              frequency: parseFloat(row.frequency),
-              neg: parseFloat(row.neg),
-              neu: parseFloat(row.neu),
-              pos: parseFloat(row.pos),
-              compound: parseFloat(row.compound),
-            });
+    fetch("input/tokensUnique" + fileIndex + ".csv")
+      .then((response) => response.text())
+      .then((data) => {
+        parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
+        parsedData.forEach(function (row) {
+          fileSet.tokensU.push({
+            index: parseInt(row.index),
+            token: row.token,
+            count: parseInt(row.count),
+            tag: row.tag,
+            frequency: parseFloat(row.frequency),
+            neg: parseFloat(row.neg),
+            neu: parseFloat(row.neu),
+            pos: parseFloat(row.pos),
+            compound: parseFloat(row.compound),
           });
-          tokensHapaxes.sort(function (a, b) {
-            return a.index - b.index;
-          });
-        })
-        .catch((error) => {
-          console.error(error);
         });
+        fileSet.tokensU.sort(function (a, b) {
+          return a.index - b.index;
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
-      fetch("input/tokensStemmedFinal.csv")
-        .then((response) => response.text())
-        .then((data) => {
-          parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
-          parsedData.forEach(function (row) {
-            tokensStemmedFinal.push({
-              index: parseInt(row.index),
-              token: row.token,
-              count: parseInt(row.count),
-              tag: row.tag,
-              frequency: parseFloat(row.frequency),
-              neg: parseFloat(row.neg),
-              neu: parseFloat(row.neu),
-              pos: parseFloat(row.pos),
-              compound: parseFloat(row.compound),
-            });
+    fetch("input/tokensHapaxes" + fileIndex + ".csv")
+      .then((response) => response.text())
+      .then((data) => {
+        parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
+        parsedData.forEach(function (row) {
+          fileSet.tokensH.push({
+            index: parseInt(row.index),
+            token: row.token,
+            count: parseInt(row.count),
+            tag: row.tag,
+            frequency: parseFloat(row.frequency),
+            neg: parseFloat(row.neg),
+            neu: parseFloat(row.neu),
+            pos: parseFloat(row.pos),
+            compound: parseFloat(row.compound),
           });
-          tokensStemmedFinal.sort(function (a, b) {
-            return a.index - b.index;
-          });
-        })
-        .catch((error) => {
-          console.error(error);
         });
+        fileSet.tokensH.sort(function (a, b) {
+          return a.index - b.index;
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
-      fetch("input/tokensStemmedUnique.csv")
-        .then((response) => response.text())
-        .then((data) => {
-          parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
-          parsedData.forEach(function (row) {
-            tokensStemmedUnique.push({
-              index: parseInt(row.index),
-              token: row.token,
-              count: parseInt(row.count),
-              tag: row.tag,
-              frequency: parseFloat(row.frequency),
-              neg: parseFloat(row.neg),
-              neu: parseFloat(row.neu),
-              pos: parseFloat(row.pos),
-              compound: parseFloat(row.compound),
-            });
+    fetch("input/tokensStemmedFinal" + fileIndex + ".csv")
+      .then((response) => response.text())
+      .then((data) => {
+        parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
+        parsedData.forEach(function (row) {
+          fileSet.tokensSF.push({
+            index: parseInt(row.index),
+            token: row.token,
+            count: parseInt(row.count),
+            tag: row.tag,
+            frequency: parseFloat(row.frequency),
+            neg: parseFloat(row.neg),
+            neu: parseFloat(row.neu),
+            pos: parseFloat(row.pos),
+            compound: parseFloat(row.compound),
           });
-          tokensStemmedUnique.sort(function (a, b) {
-            return a.index - b.index;
-          });
-        })
-        .catch((error) => {
-          console.error(error);
         });
+        fileSet.tokensSF.sort(function (a, b) {
+          return a.index - b.index;
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
-      fetch("input/tokensStemmedHapaxes.csv")
-        .then((response) => response.text())
-        .then((data) => {
-          parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
-          parsedData.forEach(function (row) {
-            tokensStemmedHapaxes.push({
-              index: parseInt(row.index),
-              token: row.token,
-              count: parseInt(row.count),
-              tag: row.tag,
-              frequency: parseFloat(row.frequency),
-              neg: parseFloat(row.neg),
-              neu: parseFloat(row.neu),
-              pos: parseFloat(row.pos),
-              compound: parseFloat(row.compound),
-            });
+    fetch("input/tokensStemmedUnique" + fileIndex + ".csv")
+      .then((response) => response.text())
+      .then((data) => {
+        parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
+        parsedData.forEach(function (row) {
+          fileSet.tokensSU.push({
+            index: parseInt(row.index),
+            token: row.token,
+            count: parseInt(row.count),
+            tag: row.tag,
+            frequency: parseFloat(row.frequency),
+            neg: parseFloat(row.neg),
+            neu: parseFloat(row.neu),
+            pos: parseFloat(row.pos),
+            compound: parseFloat(row.compound),
           });
-          tokensStemmedHapaxes.sort(function (a, b) {
-            return a.index - b.index;
-          });
-        })
-        .catch((error) => {
-          console.error(error);
         });
+        fileSet.tokensSU.sort(function (a, b) {
+          return a.index - b.index;
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
-      fetch("input/sentencesSentiment.csv")
-        .then((response) => response.text())
-        .then((data) => {
-          sentencesSentiment = Papa.parse(data, { header: true }).data;
-        })
-        .catch((error) => {
-          console.error(error);
+    fetch("input/tokensStemmedHapaxes" + fileIndex + ".csv")
+      .then((response) => response.text())
+      .then((data) => {
+        parsedData = Papa.parse(data, { header: true }).data.slice(0, -1);
+        parsedData.forEach(function (row) {
+          fileSet.tokensSH.push({
+            index: parseInt(row.index),
+            token: row.token,
+            count: parseInt(row.count),
+            tag: row.tag,
+            frequency: parseFloat(row.frequency),
+            neg: parseFloat(row.neg),
+            neu: parseFloat(row.neu),
+            pos: parseFloat(row.pos),
+            compound: parseFloat(row.compound),
+          });
         });
-    }
-    gatherData();
-  })();
+        fileSet.tokensSH.sort(function (a, b) {
+          return a.index - b.index;
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    fetch("input/sentencesSentiment" + fileIndex + ".csv")
+      .then((response) => response.text())
+      .then((data) => {
+        fileSet.sentSent = Papa.parse(data, { header: true }).data;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   document.addEventListener("DOMContentLoaded", function (event) {
     showLoading("#main-content");
@@ -275,16 +280,14 @@ $(function () {
       function (dataHtml) {
         insertHtml("#main-content", dataHtml);
 
-        // txtSpecs
-        console.log(txtSpecs);
         document.querySelector(".total-tokens").innerHTML =
           txtSpecs.totalTokens;
         document.querySelector(".total-tokens-clean").innerHTML =
           txtSpecs.totalTokensClean;
         document.querySelector(".total-tokens-unique").innerHTML =
-          txtSpecs.totalTokensUnique;
+          txtSpecs.totaltokensU;
         document.querySelector(".total-tokens-hapaxes").innerHTML =
-          txtSpecs.totalTokensHapaxes;
+          txtSpecs.totaltokensH;
         document.querySelector(".total-filtered-stemmed").innerHTML =
           txtSpecs.totalFilteredStemmed;
         document.querySelector(".total-filtered-stemmed-hapaxes").innerHTML =
@@ -294,15 +297,15 @@ $(function () {
 
         var table = $("#myTable").DataTable();
 
-        for (var i = 0; i < tokensFinal.length; i++) {
+        for (var i = 0; i < tokensF.length; i++) {
           table.row
             .add([
-              tokensFinal[i].index,
-              tokensFinal[i].token,
-              tokensFinal[i].count,
-              tokensFinal[i].tag,
-              tokensFinal[i].frequency,
-              tokensFinal[i].compound,
+              tokensF[i].index,
+              tokensF[i].token,
+              tokensF[i].count,
+              tokensF[i].tag,
+              tokensF[i].frequency,
+              tokensF[i].compound,
             ])
             .draw();
         }
@@ -330,8 +333,6 @@ $(function () {
     // } else if (selectedBreakpoint === "tokensCount") {
     //   selTset = tokensCount;
     // }
-
-
   }
 
   function buildAndShowDashboardHTML() {
@@ -352,6 +353,9 @@ $(function () {
             document
               .getElementById("filtering-select")
               .addEventListener("change", renderChange);
+              document
+              .getElementById("input-select")
+              .addEventListener("change", renderChange);
 
             renderChange();
           },
@@ -362,65 +366,64 @@ $(function () {
     );
   }
 
+
   function renderChange() {
     let stHtml = document.getElementById("tokenset-select");
     let selTset = stHtml.options[stHtml.selectedIndex].value;
-
+  
     stHtml = document.getElementById("sorting-select");
     let selSing = stHtml.options[stHtml.selectedIndex].value;
-
+  
     stHtml = document.getElementById("filtering-select");
     let selFing = stHtml.options[stHtml.selectedIndex].value;
-
+  
+    stHtml = document.getElementById("input-select");
+    let selInp = stHtml.options[stHtml.selectedIndex].value;
+ 
+    let fileSelect = selInp === "txtA" ? inputA : inputB;
+  
     if (selFing === "hapaxes") {
       if (selTset === "tokensStemmedCount") {
-        selectedTokens = tokensStemmedHapaxes;
+        selSet = fileSelect.tokensSH;
       } else if (selTset === "tokensCount") {
-        selectedTokens = tokensHapaxes;
+        selSet = fileSelect.tokensH;
       }
     } else {
-      // Set the global wordCloudInputData variable based on the selected option
       if (selTset === "tokensStemmedCount") {
-        selectedTokens = tokensStemmedUnique;
+        selSet = fileSelect.tokensSU;
       } else if (selTset === "tokensCount") {
-        selectedTokens = tokensUnique;
+        selSet = fileSelect.tokensU;
       }
     }
-
-    console.log(selSing)
+  
     if (selSing == "index") {
-      selectedTokens.sort(function (a, b) {
+      selSet.sort(function (a, b) {
         return a.index - b.index;
       });
     } else if (selSing == "token") {
-      selectedTokens.sort((a, b) => a.token.localeCompare(b.token));
+      selSet.sort((a, b) => a.token.localeCompare(b.token));
     } else if (selSing == "frequency") {
-      selectedTokens.sort(function (a, b) {
+      selSet.sort(function (a, b) {
         return b.frequency - a.frequency;
       });
     } else if (selSing == "count") {
-      selectedTokens.sort(function (a, b) {
+      selSet.sort(function (a, b) {
         return b.count - a.count;
       });
     }
-    // Set the global wordCloudInputData variable based on the selected option
     if (selFing === "top") {
-      selectedTokens = selectedTokens.slice(0, 50);
+      selSet = selSet.slice(0, 50);
     }
-
-    wordCloud(selectedTokens);
-    // barChart(selectedTokens);
-    scatterPlot(selectedTokens);
-    countChart(selectedTokens);
-    pieChart(selectedTokens);
-    heatmap(selectedTokens);
+  
+    wordCloud(selSet);
+    scatterPlot(selSet);
+    countChart(selSet);
+    pieChart(selSet);
+    heatmap(selSet);
   }
 
   function barChart(data) {
     $("#bar-chart").html("");
-
-    // data=data.slice(0,20)
-    // console.log(data)
 
     var margin = { top: 20, right: 30, bottom: 70, left: 20 },
       height = 300 - margin.top - margin.bottom;
@@ -593,14 +596,18 @@ $(function () {
   function countChart(data) {
     var xField = "token";
     var yField = "count";
-  
+
     var chart = document.getElementById("count-chart");
-  
+
     // Check if chart has already been created
     if (chart.data) {
       // Update chart data
-      chart.data[0].x = data.map(function(d) { return d[xField]; });
-      chart.data[0].y = data.map(function(d) { return d[yField]; });
+      chart.data[0].x = data.map(function (d) {
+        return d[xField];
+      });
+      chart.data[0].y = data.map(function (d) {
+        return d[yField];
+      });
       Plotly.redraw(chart);
     } else {
       // Create new chart
@@ -621,17 +628,21 @@ $(function () {
         width: chart.clientWidth,
         height: 400, // height of the plot in pixels
       };
-  
+
       Plotly.newPlot(chart, prepData(data), layout, { showSendToCloud: true });
     }
-  
+
     function prepData(data) {
-      var x = data.map(function(d) { return d[xField]; });
-      var y = data.map(function(d) { return d[yField]; });
-      return [      {        mode: "lines",        x: x,        y: y,      },    ];
+      var x = data.map(function (d) {
+        return d[xField];
+      });
+      var y = data.map(function (d) {
+        return d[yField];
+      });
+      return [{ mode: "lines", x: x, y: y }];
     }
   }
-  
+
   function pieChart(data) {
     var tagCounts = {
       Noun: 0,
@@ -807,7 +818,7 @@ $(function () {
           .append("text")
           .attr("class", "label")
           .attr("x", -200) // Place the label at the center of the corresponding x-coordinate of the rectangle
-          .attr("y", - 30) // Place the label at the center of the corresponding y-coordinate of the rectangle
+          .attr("y", -30) // Place the label at the center of the corresponding y-coordinate of the rectangle
           .attr("dy", ".7em")
           .attr("transform", "rotate(-90)") // Rotate the label
           .text(d.token);
@@ -837,7 +848,3 @@ $(function () {
 
   global.$dc = dc;
 })(window);
-
-
-
-
