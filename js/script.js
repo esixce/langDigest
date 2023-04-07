@@ -409,7 +409,7 @@ $(function () {
     }
 
     wordCloud(selectedTokens);
-    barChart(selectedTokens);
+    // barChart(selectedTokens);
     scatterPlot(selectedTokens);
     countChart(selectedTokens);
     pieChart(selectedTokens);
