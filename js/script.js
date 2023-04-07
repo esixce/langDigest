@@ -68,7 +68,9 @@ $(function () {
               pos: parseFloat(row.pos),
               compound: parseFloat(row.compound),
             });
-            tokensFinal.sort(function (a, b) { return a.index - b.index;});
+            tokensFinal.sort(function (a, b) {
+              return a.index - b.index;
+            });
           });
         })
         .catch((error) => {
@@ -92,7 +94,9 @@ $(function () {
               compound: parseFloat(row.compound),
             });
           });
-          tokensUnique.sort(function (a, b) { return a.index - b.index;});
+          tokensUnique.sort(function (a, b) {
+            return a.index - b.index;
+          });
         })
         .catch((error) => {
           console.error(error);
@@ -115,7 +119,9 @@ $(function () {
               compound: parseFloat(row.compound),
             });
           });
-          tokensHapaxes.sort(function (a, b) { return a.index - b.index;});
+          tokensHapaxes.sort(function (a, b) {
+            return a.index - b.index;
+          });
         })
         .catch((error) => {
           console.error(error);
@@ -138,7 +144,9 @@ $(function () {
               compound: parseFloat(row.compound),
             });
           });
-          tokensStemmedFinal.sort(function (a, b) { return a.index - b.index;});
+          tokensStemmedFinal.sort(function (a, b) {
+            return a.index - b.index;
+          });
         })
         .catch((error) => {
           console.error(error);
@@ -161,7 +169,9 @@ $(function () {
               compound: parseFloat(row.compound),
             });
           });
-          tokensStemmedUnique.sort(function (a, b) { return a.index - b.index;});
+          tokensStemmedUnique.sort(function (a, b) {
+            return a.index - b.index;
+          });
         })
         .catch((error) => {
           console.error(error);
@@ -184,7 +194,9 @@ $(function () {
               compound: parseFloat(row.compound),
             });
           });
-          tokensStemmedHapaxes.sort(function (a, b) { return a.index - b.index;});
+          tokensStemmedHapaxes.sort(function (a, b) {
+            return a.index - b.index;
+          });
         })
         .catch((error) => {
           console.error(error);
@@ -194,6 +206,7 @@ $(function () {
         .then((response) => response.text())
         .then((data) => {
           sentencesSentiment = Papa.parse(data, { header: true }).data;
+          console.log(sentencesSentiment);
         })
         .catch((error) => {
           console.error(error);
@@ -201,7 +214,7 @@ $(function () {
     }
     gatherData();
   })();
-  
+
   document.addEventListener("DOMContentLoaded", function (event) {
     showLoading("#main-content");
     buildAndShowDashboardHTML();
@@ -269,34 +282,43 @@ $(function () {
       dataHtmlUrl,
       function (dataHtml) {
         insertHtml("#main-content", dataHtml);
-  
+
         // txtSpecs
-        console.log(txtSpecs)
-        document.querySelector(".total-tokens").innerHTML = txtSpecs.totalTokens;
-        document.querySelector(".total-tokens-clean").innerHTML = txtSpecs.totalTokensClean;
-        document.querySelector(".total-tokens-unique").innerHTML = txtSpecs.totalTokensUnique;
-        document.querySelector(".total-tokens-hapaxes").innerHTML = txtSpecs.totalTokensHapaxes;
-        document.querySelector(".total-filtered-stemmed").innerHTML = txtSpecs.totalFilteredStemmed;
-        document.querySelector(".total-filtered-stemmed-hapaxes").innerHTML = txtSpecs.totalFilteredStemmedHapaxes;
-        document.querySelector(".total-filtered-stemmed-unique").innerHTML = txtSpecs.totalFilteredStemmedUnique;
-  
-        var table = $('#myTable').DataTable();
-  
+        console.log(txtSpecs);
+        document.querySelector(".total-tokens").innerHTML =
+          txtSpecs.totalTokens;
+        document.querySelector(".total-tokens-clean").innerHTML =
+          txtSpecs.totalTokensClean;
+        document.querySelector(".total-tokens-unique").innerHTML =
+          txtSpecs.totalTokensUnique;
+        document.querySelector(".total-tokens-hapaxes").innerHTML =
+          txtSpecs.totalTokensHapaxes;
+        document.querySelector(".total-filtered-stemmed").innerHTML =
+          txtSpecs.totalFilteredStemmed;
+        document.querySelector(".total-filtered-stemmed-hapaxes").innerHTML =
+          txtSpecs.totalFilteredStemmedHapaxes;
+        document.querySelector(".total-filtered-stemmed-unique").innerHTML =
+          txtSpecs.totalFilteredStemmedUnique;
+
+        var table = $("#myTable").DataTable();
+
         for (var i = 0; i < tokensFinal.length; i++) {
-          table.row.add([          
-            tokensFinal[i].index,
-            tokensFinal[i].token,
-            tokensFinal[i].count,
-            tokensFinal[i].tag,
-            tokensFinal[i].frequency,
-            tokensFinal[i].compound
-          ]).draw();
+          table.row
+            .add([
+              tokensFinal[i].index,
+              tokensFinal[i].token,
+              tokensFinal[i].count,
+              tokensFinal[i].tag,
+              tokensFinal[i].frequency,
+              tokensFinal[i].compound,
+            ])
+            .draw();
         }
       },
       false
     );
   }
-  
+
   function buildAndShowAboutHTML() {
     // Load home snippet page
     $ajaxUtils.sendGetRequest(
@@ -317,23 +339,22 @@ $(function () {
           function (paramsHtml) {
             insertHtml("#main-content", paramsHtml + homeHtml);
 
+            // document
+            //   .getElementById("params-button")
+            //   .addEventListener("click", renderChange);
+
             document
               .getElementById("tokenset-select")
-              .addEventListener("change", tokensetChange);
+              .addEventListener("change", renderChange);
             document
               .getElementById("sorting-select")
-              .addEventListener("change", sortingChange);
+              .addEventListener("change", renderChange);
             document
               .getElementById("filtering-select")
-              .addEventListener("change", filteringChange);
-            document
-              .getElementById("breakpoint-select")
-              .addEventListener("change", breakpointChange);
-
-            chgTx.tokenset = true;
-            chgTx.sorting = true;
-            chgTx.filtering = true;
-            chgTx.breakpoint = true;
+              .addEventListener("change", renderChange);
+            // document
+            //   .getElementById("breakpoint-select")
+            //   .addEventListener("change", renderChange);
 
             renderChange();
           },
@@ -344,75 +365,76 @@ $(function () {
     );
   }
 
-  function tokensetChange() {
-    chgTx.tokenset = true;
-    renderChange();
-  }
-  function sortingChange() {
-    chgTx.sorting = true;
-    renderChange();
-  }
-  function filteringChange() {
-    chgTx.filtering = true;
-    renderChange();
-  }
-  function breakpointChange() {
-    chgTx.breakpoint = true;
-    renderChange();
-  }
-
   function renderChange() {
-    // console.log(selectedTokens)
+    let stHtml = document.getElementById("tokenset-select");
+    let selTset = stHtml.options[stHtml.selectedIndex].value;
 
-    if (chgTx.tokenset == true) {
-      const elementHtml = document.getElementById("tokenset-select");
-      let selectedTokenset = elementHtml.options[elementHtml.selectedIndex].value;
+    stHtml = document.getElementById("sorting-select");
+    let selSing = stHtml.options[stHtml.selectedIndex].value;
 
+    stHtml = document.getElementById("filtering-select");
+    let selFing = stHtml.options[stHtml.selectedIndex].value;
+
+    if (selFing === "hapaxes") {
+      if (selTset === "tokensStemmedCount") {
+        selectedTokens = tokensStemmedHapaxes;
+      } else if (selTset === "tokensCount") {
+        selectedTokens = tokensHapaxes;
+      }
+
+      if (selSing == "chronological") {
+        selectedTokens.sort(function (a, b) {
+          return a.index - b.index;
+        });
+      } else if (selSing == "alphabetical") {
+        selectedTokens.sort((a, b) => a.token.localeCompare(b.token));
+      } else if (selSing == "frequency") {
+        selectedTokens.sort(function (a, b) {
+          return b.frequency - a.frequency;
+        });
+      } else if (selSing == "count") {
+        selectedTokens.sort(function (a, b) {
+          return b.count - a.count;
+        });
+      }
+    } else {
       // Set the global wordCloudInputData variable based on the selected option
-      if (selectedTokenset === "tokensStemmedCount") {
+      if (selTset === "tokensStemmedCount") {
         selectedTokens = tokensStemmedUnique;
-      } else if (selectedTokenset === "tokensCount") {
+      } else if (selTset === "tokensCount") {
         selectedTokens = tokensUnique;
       }
 
-    } else if (chgTx.sorting == true) {
-      const elementHtml = document.getElementById("sorting-select");
-      let selectedSorting = elementHtml.options[elementHtml.selectedIndex].value;
-      
-      if (selectedSorting == "chronological") {
-        selectedTokens.sort(function (a, b) { return a.index - b.index;});
-      } else if (selectedSorting == "alphabetical") {
+      if (selSing == "chronological") {
+        selectedTokens.sort(function (a, b) {
+          return a.index - b.index;
+        });
+      } else if (selSing == "alphabetical") {
         selectedTokens.sort((a, b) => a.token.localeCompare(b.token));
-      } else if (selectedSorting == "frequency") {
-        selectedTokens.sort(function (a, b) { return b.frequency - a.frequency;});
-      } else if (selectedSorting == "count") {
-        selectedTokens.sort(function (a, b) { return b.count - a.count;});
-      }
-    } else if (chgTx.filtering == true) {
-      const elementHtml = document.getElementById("filtering-select");
-      let selectedFiltering =
-      elementHtml.options[elementHtml.selectedIndex].value;
-
-      // Set the global wordCloudInputData variable based on the selected option
-      if (selectedFiltering === "none") {
-        selectedTokens = tokensStemmedCount;
-      } else if (selectedFiltering === "top") {
-        selectedTokens = selectedTokens.slice(0, 50);
-      } else if (selectedFiltering === "hapaxes") {
-        selectedTokens = tokensHapaxes;
-      }
-    } else if (chgTx.breakpoint == true) {
-      const elementHtml = document.getElementById("filtering-select");
-      let selectedBreakpoint =
-      elementHtml.options[elementHtml.selectedIndex].value;
-
-      // Set the global wordCloudInputData variable based on the selected option
-      if (selectedBreakpoint === "tokensStemmedCount") {
-        selectedTokenset = tokensStemmedCount;
-      } else if (selectedBreakpoint === "tokensCount") {
-        selectedTokenset = tokensCount;
+      } else if (selSing == "frequency") {
+        selectedTokens.sort(function (a, b) {
+          return b.frequency - a.frequency;
+        });
+      } else if (selSing == "count") {
+        selectedTokens.sort(function (a, b) {
+          return b.count - a.count;
+        });
       }
     }
+    // Set the global wordCloudInputData variable based on the selected option
+    if (selFing === "top") {
+      selectedTokens = selectedTokens.slice(0, 50);
+    }
+
+    // stHtml = document.getElementById("filtering-select");
+    // let selectedBreakpoint = stHtml.options[stHtml.selectedIndex].value;
+    // console.log(selectedBreakpoint)
+    // Set the global wordCloudInputData variable based on the selected option
+    // if (selectedBreakpoint === "tokensStemmedCount") {
+    //   selTset = tokensStemmedCount;
+    // } else if (selectedBreakpoint === "tokensCount") {
+    //   selTset = tokensCount;
+    // }
 
     $("#count-chart").html("");
 
@@ -421,12 +443,7 @@ $(function () {
     scatterPlot(selectedTokens);
     countChart(selectedTokens);
     pieChart(selectedTokens);
-    heatmap(selectedTokens)
-
-    chgTx.tokenset = false;
-    chgTx.sorting = false;
-    chgTx.filtering = false;
-    chgTx.breakpoint = false;
+    heatmap(selectedTokens);
   }
 
   function barChart(data) {
@@ -551,7 +568,10 @@ $(function () {
 
     // Create a scatterplot of sentiment vs frequency
     const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-    const width = document.getElementById("scatter-plot").clientWidth - margin.left - margin.right;
+    const width =
+      document.getElementById("scatter-plot").clientWidth -
+      margin.left -
+      margin.right;
     const height = 400 - margin.top - margin.bottom;
 
     const svg = d3
@@ -649,7 +669,7 @@ $(function () {
         },
       ],
     };
-    
+
     var data = prepData();
     var layout = {
       xaxis: {
@@ -700,114 +720,116 @@ $(function () {
 
   function pieChart(data) {
     var tagCounts = {
-      'Noun': 0,
-      'Verb': 0,
-      'Adjective': 0,
-      'Adverb': 0,
-      'Pronoun': 0,
-      'Determiner': 0,
-      'Other': 0
+      Noun: 0,
+      Verb: 0,
+      Adjective: 0,
+      Adverb: 0,
+      Pronoun: 0,
+      Determiner: 0,
+      Other: 0,
     };
-  
+
     for (var i = 0; i < data.length; i++) {
       var tag = data[i].tag;
-      if (tag.startsWith('NN')) {
-        tagCounts['Noun'] += data[i].count;
-      } else if (tag.startsWith('VB')) {
-        tagCounts['Verb'] += data[i].count;
-      } else if (tag.startsWith('JJ')) {
-        tagCounts['Adjective'] += data[i].count;
-      } else if (tag.startsWith('RB')) {
-        tagCounts['Adverb'] += data[i].count;
-      } else if (tag.startsWith('PRP') || tag == 'WP' || tag == 'WDT') {
-        tagCounts['Pronoun'] += data[i].count;
-      } else if (tag == 'DT' || tag == 'PDT') {
-        tagCounts['Determiner'] += data[i].count;
+      if (tag.startsWith("NN")) {
+        tagCounts["Noun"] += data[i].count;
+      } else if (tag.startsWith("VB")) {
+        tagCounts["Verb"] += data[i].count;
+      } else if (tag.startsWith("JJ")) {
+        tagCounts["Adjective"] += data[i].count;
+      } else if (tag.startsWith("RB")) {
+        tagCounts["Adverb"] += data[i].count;
+      } else if (tag.startsWith("PRP") || tag == "WP" || tag == "WDT") {
+        tagCounts["Pronoun"] += data[i].count;
+      } else if (tag == "DT" || tag == "PDT") {
+        tagCounts["Determiner"] += data[i].count;
       } else {
-        tagCounts['Other'] += data[i].count;
+        tagCounts["Other"] += data[i].count;
       }
     }
-  
+
     var tagCountData = {
       labels: Object.keys(tagCounts),
-      datasets: [{
-        data: Object.values(tagCounts),
-        backgroundColor: [
-          '#576cbc',
-          '#bc579f',
-          '#bca757',
-          '#b2524d',
-          '#4dadb2',
-          '#844db2',
-          '#57bc75'
-        ],
-        hoverBackgroundColor: [
-          '#576cbc',
-          '#bc579f',
-          '#bca757',
-          '#57bc75',
-          '#4dadb2',
-          '#844db2',
-          '#b2524d'
-        ]
-      }]
+      datasets: [
+        {
+          data: Object.values(tagCounts),
+          backgroundColor: [
+            "#576cbc",
+            "#bc579f",
+            "#bca757",
+            "#b2524d",
+            "#4dadb2",
+            "#844db2",
+            "#57bc75",
+          ],
+          hoverBackgroundColor: [
+            "#576cbc",
+            "#bc579f",
+            "#bca757",
+            "#57bc75",
+            "#4dadb2",
+            "#844db2",
+            "#b2524d",
+          ],
+        },
+      ],
     };
-  
-    var ctx = document.getElementById('tag-chart').getContext('2d');
-  
+
+    var ctx = document.getElementById("tag-chart").getContext("2d");
+
     // Check if there is an existing Chart object and destroy it
     var existingChart = Chart.getChart(ctx);
     if (existingChart) {
       existingChart.destroy();
     }
     var tagCountChart = new Chart(ctx, {
-      type: 'pie',
+      type: "pie",
       data: tagCountData,
       options: {
         legend: {
-          position: 'bottom'
-        }
-      }
-    });    
+          position: "bottom",
+        },
+      },
+    });
   }
-      
+
   const tagCategoryMapping = {
-    "NN": "Noun",
-    "NNS": "Noun",
-    "NNP": "Noun",
-    "NNPS": "Noun",
-    "VB": "Verb",
-    "VBD": "Verb",
-    "VBG": "Verb",
-    "VBN": "Verb",
-    "VBP": "Verb",
-    "VBZ": "Verb",
-    "JJ": "Adjective",
-    "JJR": "Adjective",
-    "JJS": "Adjective",
-    "RB": "Adverb",
-    "RBR": "Adverb",
-    "RBS": "Adverb",
-    "PRP": "Pronoun",
-    "WP": "Pronoun",
-    "WDT": "Pronoun",
-    "DT": "Determiner",
-    "PDT": "Determiner",
-    "CC": "Other",
-    "IN": "Other",
-    "MD": "Other",
-    "WRB": "Other",
-    "CD": "Other",
-    "FW": "Other",
-    "RP": "Other",
-    "EX": "Other",
-    "TO": "Other",
-    "PRP$": "Other",
+    NN: "Noun",
+    NNS: "Noun",
+    NNP: "Noun",
+    NNPS: "Noun",
+    VB: "Verb",
+    VBD: "Verb",
+    VBG: "Verb",
+    VBN: "Verb",
+    VBP: "Verb",
+    VBZ: "Verb",
+    JJ: "Adjective",
+    JJR: "Adjective",
+    JJS: "Adjective",
+    RB: "Adverb",
+    RBR: "Adverb",
+    RBS: "Adverb",
+    PRP: "Pronoun",
+    WP: "Pronoun",
+    WDT: "Pronoun",
+    DT: "Determiner",
+    PDT: "Determiner",
+    CC: "Other",
+    IN: "Other",
+    MD: "Other",
+    WRB: "Other",
+    CD: "Other",
+    FW: "Other",
+    RP: "Other",
+    EX: "Other",
+    TO: "Other",
+    PRP$: "Other",
     // any other tags not covered by the function
     // will be mapped to "Other"
-    "default": "Other"
+    default: "Other",
   };
-  
+
   function heatmap(inputData) {
     $("#heatmap").html("");
 
@@ -816,40 +838,45 @@ $(function () {
       index: d.index,
       tag: d.tag,
       token: d.token,
-      count: d.count
+      count: d.count,
     }));
-    
+
     const margin = { top: 5, right: 5, bottom: 55, left: 50 };
-    const width = document.getElementById("heatmap").clientWidth - margin.left - margin.right;
+    const width =
+      document.getElementById("heatmap").clientWidth -
+      margin.left -
+      margin.right;
     const height = 400 - margin.top - margin.bottom;
-  
+
     const xLabels = data.map((d) => d.tagCategory);
     const yLabels = data.map((d) => d.token);
-    const colorScale = d3.scaleSequential(d3.interpolateBlues).domain([0, d3.max(data, (d) => d.count)]);
-  
+    const colorScale = d3
+      .scaleSequential(d3.interpolateBlues)
+      .domain([0, d3.max(data, (d) => d.count)]);
+
     const svg = d3
-    .select("#heatmap")
-    .append("svg")
-    .style("background-color", "white") // Add this line to set the background color
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
-    
+      .select("#heatmap")
+      .append("svg")
+      .style("background-color", "white") // Add this line to set the background color
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+
     const xScale = d3
       .scaleBand()
       .domain(xLabels)
       .range([0, width])
       .paddingInner(0.05)
       .align(0.1);
-  
+
     const yScale = d3
       .scaleBand()
       .domain(yLabels)
       .range([height, 0])
       .paddingInner(0.05)
       .align(0.1);
-  
+
     svg
       .selectAll()
       .data(data)
@@ -860,7 +887,7 @@ $(function () {
       .attr("width", xScale.bandwidth())
       .attr("height", yScale.bandwidth())
       .style("fill", (d) => colorScale(d.count));
-  
+
     svg
       .append("g")
       .attr("transform", `translate(0,${height})`)
@@ -870,14 +897,12 @@ $(function () {
       .attr("dy", "0.75em")
       .attr("dx", "-0.5em")
       .style("text-anchor", "end");
-  
+
     svg.append("g").call(d3.axisLeft(yScale));
   }
-  
 
   function testDiv() {}
 
-  
   global.$dc = dc;
 })(window);
 
