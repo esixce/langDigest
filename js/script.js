@@ -28,13 +28,6 @@ $(function () {
 
   let selectedTokens;
 
-  let chgTx = {
-    tokenset: false,
-    sorting: false,
-    filtering: false,
-    breakpoint: false,
-  };
-
   (function () {
     function gatherData() {
       fetch("input/chatgpt.txt")
@@ -206,7 +199,6 @@ $(function () {
         .then((response) => response.text())
         .then((data) => {
           sentencesSentiment = Papa.parse(data, { header: true }).data;
-          console.log(sentencesSentiment);
         })
         .catch((error) => {
           console.error(error);
@@ -351,10 +343,6 @@ $(function () {
           function (paramsHtml) {
             insertHtml("#main-content", paramsHtml + homeHtml);
 
-            // document
-            //   .getElementById("params-button")
-            //   .addEventListener("click", renderChange);
-
             document
               .getElementById("tokenset-select")
               .addEventListener("change", renderChange);
@@ -364,9 +352,6 @@ $(function () {
             document
               .getElementById("filtering-select")
               .addEventListener("change", renderChange);
-            // document
-            //   .getElementById("breakpoint-select")
-            //   .addEventListener("change", renderChange);
 
             renderChange();
           },
@@ -401,11 +386,13 @@ $(function () {
         selectedTokens = tokensUnique;
       }
     }
-    if (selSing == "chronological") {
+
+    console.log(selSing)
+    if (selSing == "index") {
       selectedTokens.sort(function (a, b) {
         return a.index - b.index;
       });
-    } else if (selSing == "alphabetical") {
+    } else if (selSing == "token") {
       selectedTokens.sort((a, b) => a.token.localeCompare(b.token));
     } else if (selSing == "frequency") {
       selectedTokens.sort(function (a, b) {
@@ -420,9 +407,6 @@ $(function () {
     if (selFing === "top") {
       selectedTokens = selectedTokens.slice(0, 50);
     }
-
-
-    $("#count-chart").html("");
 
     wordCloud(selectedTokens);
     barChart(selectedTokens);
@@ -607,90 +591,47 @@ $(function () {
   }
 
   function countChart(data) {
-    // console.log(data);
     var xField = "token";
     var yField = "count";
-
-    var selectorOptions = {
-      buttons: [
-        {
-          step: "alphabetical",
-          stepmode: "backward",
-          count: 1,
-          label: "A - C",
+  
+    var chart = document.getElementById("count-chart");
+  
+    // Check if chart has already been created
+    if (chart.data) {
+      // Update chart data
+      chart.data[0].x = data.map(function(d) { return d[xField]; });
+      chart.data[0].y = data.map(function(d) { return d[yField]; });
+      Plotly.redraw(chart);
+    } else {
+      // Create new chart
+      var layout = {
+        xaxis: {
+          rangeslider: {},
         },
-        {
-          step: "alphabetical",
-          stepmode: "backward",
-          count: 1,
-          label: "D - F",
+        yaxis: {
+          fixedrange: true,
         },
-        {
-          step: "alphabetical",
-          stepmode: "backward",
-          count: 1,
-          label: "G - I",
+        margin: {
+          l: 25, // left margin
+          r: 15, // right margin
+          b: 0, // bottom margin
+          t: 10, // top margin
+          pad: 0, // padding between the plot and the margins
         },
-        {
-          step: "alphabetical",
-          stepmode: "backward",
-          count: 1,
-          label: "J - L",
-        },
-        {
-          step: "all",
-        },
-      ],
-    };
-
-    var data = prepData();
-    var layout = {
-      xaxis: {
-        rangeselector: selectorOptions,
-        rangeslider: {},
-      },
-      yaxis: {
-        fixedrange: true,
-      },
-      margin: {
-        l: 15, // left margin
-        r: 15, // right margin
-        b: 0, // bottom margin
-        t: 0, // top margin
-        pad: 0, // padding between the plot and the margins
-      },
-      width: document.getElementById("count-chart").clientWidth,
-      height: 400, // height of the plot in pixels
-    };
-
-    Plotly.plot("count-chart", data, layout, { showSendToCloud: true });
-
-    function prepData() {
-      var x = [];
-      var y = [];
-
-      // // SORT TOKENS
-      // tokensUnique.sort(function(a, b) {
-      //   return a.token.localeCompare(b.token);
-      // });
-
-      data.forEach(function (datum, i) {
-        // , i
-        // console.log(datum) // WHAT THE HECK TODO FLIP
-        x.push(datum[xField]);
-        y.push(datum[yField]);
-      });
-
-      return [
-        {
-          mode: "lines",
-          x: x,
-          y: y,
-        },
-      ];
+        width: chart.clientWidth,
+        height: 400, // height of the plot in pixels
+      };
+  
+      Plotly.newPlot(chart, prepData(data), layout, { showSendToCloud: true });
+    }
+  
+    function prepData(data) {
+      var x = data.map(function(d) { return d[xField]; });
+      var y = data.map(function(d) { return d[yField]; });
+      return [      {        mode: "lines",        x: x,        y: y,      },    ];
     }
   }
-
+  
   function pieChart(data) {
     var tagCounts = {
       Noun: 0,
@@ -896,3 +837,7 @@ $(function () {
 
   global.$dc = dc;
 })(window);
+
+
+
+
