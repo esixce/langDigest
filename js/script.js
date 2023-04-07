@@ -27,10 +27,11 @@ $(function () {
     this.tokensSH = [];
     this.sentSent = [];
   }
-  
+
   const inputA = new ChatData();
   const inputB = new ChatData();
-  
+  let fileSelect;
+
   let selSet;
 
   gatherData(1, inputA);
@@ -49,7 +50,7 @@ $(function () {
     fetch("input/txtSpecs" + fileIndex + ".txt")
       .then((response) => response.json())
       .then((data) => {
-        window[`txtSpecs${fileIndex}`] = data;
+        fileSet.txtSpecs = data;
       });
 
     fetch("input/tokensFinal" + fileIndex + ".csv")
@@ -237,23 +238,19 @@ $(function () {
     return string;
   };
 
-  // Load the menu categories view
   dc.loadDashboard = function () {
     showLoading("#main-content");
     buildAndShowDashboardHTML();
   };
 
-  // Load the menu categories view
   dc.loadText = function () {
     buildAndShowTextHTML();
   };
 
-  // Load the menu categories view
   dc.loadData = function () {
     buildAndShowDataHTML();
   };
 
-  // Load the menu categories view
   dc.loadAbout = function () {
     buildAndShowAboutHTML();
   };
@@ -263,16 +260,46 @@ $(function () {
     $ajaxUtils.sendGetRequest(
       textHtmlUrl,
       function (textHtml) {
+        console.log(fileSelect);
+
         var textHtml = insertProperty(
           textHtml,
           "title",
-          "Chat GPT Conversation"
+          fileSelect.txtSpecs.title
         );
         insertHtml("#main-content", textHtml);
+
+        // Display chatData.txt as separate paragraphs
+        var chatTextHtml = "";
+        for (var i = 0; i < fileSelect.txt.length; i++) {
+          chatTextHtml += "<p>" + fileSelect.txt[i] + "</p>";
+        }
+        insertHtml("#chat-text", chatTextHtml);
       },
       false
     ); // False here because we are getting just regular HTML from the server, so no need to process JSON.
   }
+
+  // function buildAndShowTextHTML() {
+  //   // Load home snippet page
+  //   $ajaxUtils.sendGetRequest(
+  //     textHtmlUrl,
+  //     function (textHtml) {
+  //       var textHtml = insertProperty(
+  //         textHtml,
+  //         "title",
+  //         "Chat GPT Conversation"
+  //       );
+
+  //       console.log(fileSelect)
+
+  //       insertHtml("my-element", fileSelect.txt);
+
+  //       insertHtml("#main-content", textHtml);
+  //     },
+  //     false
+  //   ); // False here because we are getting just regular HTML from the server, so no need to process JSON.
+  // }
 
   function buildAndShowDataHTML() {
     $ajaxUtils.sendGetRequest(
@@ -281,31 +308,31 @@ $(function () {
         insertHtml("#main-content", dataHtml);
 
         document.querySelector(".total-tokens").innerHTML =
-          txtSpecs.totalTokens;
+          fileSelect.txtSpecs.totalTokens;
         document.querySelector(".total-tokens-clean").innerHTML =
-          txtSpecs.totalTokensClean;
+          fileSelect.txtSpecs.totalTokensClean;
         document.querySelector(".total-tokens-unique").innerHTML =
-          txtSpecs.totaltokensU;
+          fileSelect.txtSpecs.totalTokensUnique;
         document.querySelector(".total-tokens-hapaxes").innerHTML =
-          txtSpecs.totaltokensH;
+          fileSelect.txtSpecs.totalTokensHapaxes;
         document.querySelector(".total-filtered-stemmed").innerHTML =
-          txtSpecs.totalFilteredStemmed;
+          fileSelect.txtSpecs.totalFilteredStemmed;
         document.querySelector(".total-filtered-stemmed-hapaxes").innerHTML =
-          txtSpecs.totalFilteredStemmedHapaxes;
+          fileSelect.txtSpecs.totalFilteredStemmedHapaxes;
         document.querySelector(".total-filtered-stemmed-unique").innerHTML =
-          txtSpecs.totalFilteredStemmedUnique;
+          fileSelect.txtSpecs.totalFilteredStemmedUnique;
 
         var table = $("#myTable").DataTable();
 
-        for (var i = 0; i < tokensF.length; i++) {
+        for (var i = 0; i < fileSelect.tokensF.length; i++) {
           table.row
             .add([
-              tokensF[i].index,
-              tokensF[i].token,
-              tokensF[i].count,
-              tokensF[i].tag,
-              tokensF[i].frequency,
-              tokensF[i].compound,
+              fileSelect.tokensF[i].index,
+              fileSelect.tokensF[i].token,
+              fileSelect.tokensF[i].count,
+              fileSelect.tokensF[i].tag,
+              fileSelect.tokensF[i].frequency,
+              fileSelect.tokensF[i].compound,
             ])
             .draw();
         }
@@ -315,24 +342,13 @@ $(function () {
   }
 
   function buildAndShowAboutHTML() {
-    // Load home snippet page
     $ajaxUtils.sendGetRequest(
       aboutHtmlUrl,
       function (aboutHtml) {
         insertHtml("#main-content", aboutHtml);
       },
       false
-    ); // False here because we are getting just regular HTML from the server, so no need to process JSON.
-
-    // stHtml = document.getElementById("filtering-select");
-    // let selectedBreakpoint = stHtml.options[stHtml.selectedIndex].value;
-    // console.log(selectedBreakpoint)
-    // Set the global wordCloudInputData variable based on the selected option
-    // if (selectedBreakpoint === "tokensStemmedCount") {
-    //   selTset = tokensStemmedCount;
-    // } else if (selectedBreakpoint === "tokensCount") {
-    //   selTset = tokensCount;
-    // }
+    );
   }
 
   function buildAndShowDashboardHTML() {
@@ -353,7 +369,7 @@ $(function () {
             document
               .getElementById("filtering-select")
               .addEventListener("change", renderChange);
-              document
+            document
               .getElementById("input-select")
               .addEventListener("change", renderChange);
 
@@ -366,22 +382,21 @@ $(function () {
     );
   }
 
-
   function renderChange() {
     let stHtml = document.getElementById("tokenset-select");
     let selTset = stHtml.options[stHtml.selectedIndex].value;
-  
+
     stHtml = document.getElementById("sorting-select");
     let selSing = stHtml.options[stHtml.selectedIndex].value;
-  
+
     stHtml = document.getElementById("filtering-select");
     let selFing = stHtml.options[stHtml.selectedIndex].value;
-  
+
     stHtml = document.getElementById("input-select");
     let selInp = stHtml.options[stHtml.selectedIndex].value;
- 
-    let fileSelect = selInp === "txtA" ? inputA : inputB;
-  
+
+    fileSelect = selInp === "txtA" ? inputA : inputB;
+
     if (selFing === "hapaxes") {
       if (selTset === "tokensStemmedCount") {
         selSet = fileSelect.tokensSH;
@@ -395,7 +410,7 @@ $(function () {
         selSet = fileSelect.tokensU;
       }
     }
-  
+
     if (selSing == "index") {
       selSet.sort(function (a, b) {
         return a.index - b.index;
@@ -414,81 +429,12 @@ $(function () {
     if (selFing === "top") {
       selSet = selSet.slice(0, 50);
     }
-  
+
     wordCloud(selSet);
     scatterPlot(selSet);
     countChart(selSet);
     pieChart(selSet);
     heatmap(selSet);
-  }
-
-  function barChart(data) {
-    $("#bar-chart").html("");
-
-    var margin = { top: 20, right: 30, bottom: 70, left: 20 },
-      height = 300 - margin.top - margin.bottom;
-    const width = document.getElementById("bar-chart").clientWidth;
-
-    var svg = d3
-      .select("#bar-chart")
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    // create x scale
-    var x = d3.scaleBand().range([0, width]).padding(0.1);
-    x.domain(
-      data.map(function (d) {
-        return d.token;
-      })
-    );
-
-    // create y scale
-    var y = d3.scaleLinear().range([height, 0]);
-    y.domain([
-      0,
-      d3.max(data, function (d) {
-        return d.frequency;
-      }),
-    ]);
-
-    // create bars
-    svg
-      .selectAll(".bar")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("x", function (d) {
-        return x(d.token);
-      })
-      .attr("width", x.bandwidth())
-      .attr("y", function (d) {
-        return y(d.frequency);
-      })
-      .attr("fill", "#576CBC") // set the bars to blue
-      .attr("height", function (d) {
-        return height - y(d.frequency);
-      });
-
-    // add x-axis
-    svg
-      .append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x))
-      .selectAll("text")
-      .attr("transform", "rotate(-90)")
-      .attr("dx", "-1.5em")
-      .attr("dy", "-0.5em")
-      .style("fill", "#0B2447") // set the color of the labels
-      .style("stroke", "#0B2447") // set the color of the tick marks
-      .style("font-size", "10px") // set the font size of the labels
-      .style("text-anchor", "end");
-
-    // add y-axis
-    svg.append("g").call(d3.axisLeft(y));
   }
 
   function wordCloud(data) {
